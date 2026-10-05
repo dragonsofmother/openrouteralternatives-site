@@ -15,9 +15,24 @@ export const SOCIAL_IMAGE_SIZE = { width: 1200, height: 630 };
 export const SOCIAL_IMAGE_ALT =
   "OpenRouter Alternatives: compare AI gateways, model routers and multi-provider AI APIs";
 
-/** Marks shown large, then small. Slugs from the dataset; each must carry a logo. */
-const FEATURED_LARGE = ["eden-ai", "kong-ai-gateway", "litellm"];
-const FEATURED_SMALL = ["helicone", "respan", "truefoundry"];
+/** Marks on the card, in the order of the scatter below. Each must carry a logo. */
+const FEATURED = ["eden-ai", "kong-ai-gateway", "litellm", "helicone", "respan", "truefoundry"];
+
+/**
+ * A loose cloud rather than a row: hand-placed offsets inside a 1080×290
+ * band, with varied tile sizes and slight tilts, so the marks read as a
+ * handful picked at random. The first three are the largest. Positions are
+ * fixed so the card renders the same on every build; none of the tiles
+ * overlap, labels included.
+ */
+const SCATTER = [
+  { box: 164, x: 24, y: 40, tilt: -4, label: 19 },
+  { box: 140, x: 262, y: 2, tilt: 3, label: 18 },
+  { box: 156, x: 452, y: 70, tilt: -2, label: 19 },
+  { box: 98, x: 672, y: 16, tilt: 5, label: 15 },
+  { box: 86, x: 806, y: 136, tilt: -3, label: 14 },
+  { box: 112, x: 936, y: 30, tilt: 2, label: 15 },
+];
 
 const INK = "#f2f7f3";
 const TEXT = "#d7e0d9";
@@ -86,12 +101,12 @@ function Tile({
 }
 
 export async function renderSocialImage(): Promise<ImageResponse> {
-  const [large, small, regular, bold] = await Promise.all([
-    marks(FEATURED_LARGE),
-    marks(FEATURED_SMALL),
+  const [featured, regular, bold] = await Promise.all([
+    marks(FEATURED),
     fontData("JetBrainsMono-Regular.ttf"),
     fontData("JetBrainsMono-Bold.ttf"),
   ]);
+  const placed = featured.map((mark, index) => ({ ...mark, ...SCATTER[index] }));
   const count = allGateways().length;
 
   return new ImageResponse(
@@ -126,13 +141,26 @@ export async function renderSocialImage(): Promise<ImageResponse> {
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 30 }}>
-          {large.map((mark) => (
-            <Tile key={mark.name} name={mark.name} src={mark.src} box={150} label={19} labelColor={TEXT} />
-          ))}
-          <div style={{ display: "flex", width: 0, height: 170, borderLeft: `1px dashed ${LINE}`, margin: "0 10px 14px" }} />
-          {small.map((mark) => (
-            <Tile key={mark.name} name={mark.name} src={mark.src} box={92} label={15} labelColor={MUTED} />
+        <div style={{ display: "flex", position: "relative", width: "100%", height: 290 }}>
+          {placed.map((mark) => (
+            <div
+              key={mark.name}
+              style={{
+                display: "flex",
+                position: "absolute",
+                left: mark.x,
+                top: mark.y,
+                transform: `rotate(${mark.tilt}deg)`,
+              }}
+            >
+              <Tile
+                name={mark.name}
+                src={mark.src}
+                box={mark.box}
+                label={mark.label}
+                labelColor={mark.box >= 130 ? TEXT : MUTED}
+              />
+            </div>
           ))}
         </div>
 

@@ -389,7 +389,6 @@ export const gateways: Gateway[] = [
       "EU-native multi-provider AI gateway with routing, failover and broad expert-model coverage.",
     type: "managed",
     tier: "primary",
-    categories: ["largest-model-catalogues", "provider-networks", "eu-gateways", "eu-hosted", "multimodal", "enterprise", "agent-gateways"],
     jurisdictionBucket: "eu",
     country: field("France", "verified", { sources: ["site", "research"], asOf: DATASET_DATE }),
     countryCode: field("FR", "verified", { sources: ["site"] }),
@@ -408,12 +407,17 @@ export const gateways: Gateway[] = [
       snapshotDate: DATASET_DATE,
     },
     models: metric(
-      listed(870, "catalogue", DATASET_DATE, {
+      official("1,000+", "2026-10-04", {
         scope: "all-modalities",
-        sourceIds: ["site", "research"],
-        note: "Official catalogue count across every modality on September 17, 2026. The marketing site states 500+ models. Not an LLM-only figure, so it is never ranked against the measured LLM catalogues.",
+        sourceIds: ["site"],
+        note: "Vendor floor across every modality, recorded on October 4, 2026. Not an LLM-only figure, so it is never compared with the measured LLM catalogues.",
       }),
       [
+        listed(870, "catalogue", DATASET_DATE, {
+          scope: "all-modalities",
+          sourceIds: ["site", "research"],
+          note: "Official catalogue count across every modality on September 17, 2026. The marketing site stated 500+ models at the time.",
+        }),
         measured(638, MEASUREMENT_DATE, {
           scope: "llm",
           sourceIds: ["models-endpoint"],
@@ -519,14 +523,14 @@ export const gateways: Gateway[] = [
     strengths: [
       "Broadest documented modality coverage in this dataset: eleven modalities including OCR, speech, translation, video and document processing alongside text.",
       "EU-incorporated with EU processing by default through a dedicated EU endpoint, zero data retention, SOC 2 and ISO/IEC 27001 stated.",
-      "Largest official catalogue among EU-incorporated entries at 870 models, with 360 LLM models measured directly from the public endpoint on September 15, 2026.",
+      "Largest stated catalogue among EU-incorporated entries at 1,000+ models across every modality, with 638 LLM models measured directly from the public endpoint on September 15, 2026.",
       "78 upstream providers measured on September 15, 2026, above the 50+ floor the vendor states.",
       "Expert models are exposed as MCP tools, so an MCP client or agent loop can call OCR, web search, speech and translation through the gateway.",
     ],
     limitations: [
       "The operating legal entity has not been read from a registry filing for this dataset.",
       "Private deployment is offered on the custom plan, but the vendor does not say whether it is a customer-cloud or on-premise deployment.",
-      "Only the LLM catalogue is individually enumerable from the public API, so the measured LLM count covers less of the platform than the 870-model catalogue figure.",
+      "Only the LLM catalogue is individually enumerable from the public API, so the measured LLM count covers less of the platform than the 1,000+ catalogue figure.",
       "No single route or endpoint total is published across its API surfaces; the 428 provider x subfeature endpoints are a project measurement.",
       "Certifications are stated by the vendor and have not been checked against the certificates themselves.",
     ],
@@ -547,14 +551,14 @@ export const gateways: Gateway[] = [
       fundingSource("edenai.co"),
       observabilitySource("help.edenai.co"),
     ],
-    lastVerified: DATASET_DATE,
+    lastVerified: "2026-10-04",
   }),
 
   createGateway({
     id: "requesty",
     slug: "requesty",
     name: "Requesty",
-    website: "https://www.requesty.ai",
+    website: "https://requesty.eu",
     logo: "/logos/requesty.png",
     summary:
       "A managed LLM routing layer that sits in front of multiple upstream providers behind a single API, with an EU gateway hosted on AWS in France.",
@@ -562,7 +566,6 @@ export const gateways: Gateway[] = [
       "OpenAI-compatible multi-provider gateway with explicit model-versus-endpoint catalogue views.",
     type: "managed",
     tier: "primary",
-    categories: ["largest-model-catalogues", "provider-networks", "eu-hosted", "multimodal"],
     jurisdictionBucket: "uk",
     legalEntity: field("REQUESTY LTD", "verified", {
       note: "Companies House number 15165717.",
@@ -690,16 +693,16 @@ export const gateways: Gateway[] = [
       researchSource(),
       baselineSource(),
       modelsEndpointSource("https://router.requesty.ai/v1/models"),
-      siteSource("https://www.requesty.ai/models"),
-      docsSource("https://docs.requesty.ai"),
+      siteSource("https://requesty.eu/models"),
+      docsSource("https://requesty.eu/docs"),
       registrySource("Companies House 15165717"),
       legalSource(),
       linkedinSource("https://www.linkedin.com/company/requesty-ai/"),
       xSource("RequestyAI"),
-      fundingSource("requesty.ai announcement"),
-      observabilitySource("requesty.ai"),
+      fundingSource("requesty.eu announcement"),
+      observabilitySource("requesty.eu"),
     ],
-    lastVerified: DATASET_DATE,
+    lastVerified: "2026-10-04",
   }),
 
   createGateway({
@@ -714,7 +717,6 @@ export const gateways: Gateway[] = [
       "European sovereign LLM router using exclusively EU-established inference providers.",
     type: "managed",
     tier: "primary",
-    categories: ["largest-model-catalogues", "provider-networks", "eu-gateways", "eu-hosted", "multimodal"],
     jurisdictionBucket: "eu",
     legalEntity: field("Cortecs GmbH", "verified", {
       sources: ["registry"],
@@ -726,7 +728,7 @@ export const gateways: Gateway[] = [
     euJurisdiction: field(true, "verified", { note: EU_NOTE, sources: ["registry"] }),
     ownershipStatus: field("independent", "verified", { sources: ["registry", "research"] }),
     productStatus: field("active", "verified", { sources: ["site"] }),
-    employees: employees("11-50"),
+    employees: employees("2-10"),
     social: {
       linkedinUrl: "https://www.linkedin.com/company/cortecs-ai/",
       xUrl: null,
@@ -832,7 +834,7 @@ export const gateways: Gateway[] = [
       fundingSource("Crunchbase"),
       observabilitySource(),
     ],
-    lastVerified: DATASET_DATE,
+    lastVerified: "2026-10-05",
   }),
 
   createGateway({
@@ -847,7 +849,6 @@ export const gateways: Gateway[] = [
       "EU-only AI router emphasizing European infrastructure and provider/data sovereignty.",
     type: "managed",
     tier: "primary",
-    categories: ["provider-networks", "eu-gateways", "eu-hosted"],
     jurisdictionBucket: "eu",
     legalEntity: field("EUrouter B.V.", "verified", {
       note: "KVK number 42054357, also printed on the vendor's own site.",
@@ -940,7 +941,6 @@ export const gateways: Gateway[] = [
       "EU-hosted AI gateway for agents with 700+ models, smart routing, fallbacks and regional controls.",
     type: "managed",
     tier: "primary",
-    categories: ["provider-networks", "eu-gateways", "eu-hosted", "multimodal"],
     jurisdictionBucket: "eu",
     legalEntity: field("Opper Technology AB", "verified", {
       sources: ["registry"],
@@ -1045,129 +1045,6 @@ export const gateways: Gateway[] = [
   }),
 
   createGateway({
-    id: "nexos-ai",
-    slug: "nexos-ai",
-    name: "nexos.ai",
-    website: "https://nexos.ai",
-    logo: "/logos/nexos-ai.png",
-    summary:
-      "An EU-incorporated AI gateway and control layer positioned around spend control, governance, access control and visibility for larger organisations.",
-    differentiator:
-      "EU-hosted enterprise AI gateway focused on spend control, governance and zero-retention access to 200+ models.",
-    type: "enterprise",
-    tier: "primary",
-    categories: ["eu-gateways", "eu-hosted", "multimodal", "enterprise", "agent-gateways"],
-    jurisdictionBucket: "eu",
-    legalEntity: field("Spectra Tech, UAB", "verified", {
-      sources: ["registry"],
-      asOf: DATASET_DATE,
-    }),
-    country: field("Lithuania", "verified", { sources: ["registry", "research"] }),
-    countryCode: field("LT", "verified", { sources: ["registry"] }),
-    city: field("Vilnius", "verified", { sources: ["registry", "linkedin"] }),
-    euJurisdiction: field(true, "verified", { note: EU_NOTE, sources: ["registry"] }),
-    ownershipStatus: field("independent", "verified", { sources: ["registry", "research"] }),
-    productStatus: field("active", "verified", { sources: ["site"] }),
-    employees: employees(
-      "51-200",
-      "LinkedIn company-size band — the largest of any EU-incorporated entry in this dataset.",
-    ),
-    social: {
-      linkedinUrl: "https://www.linkedin.com/company/nexos-ai/",
-      xUrl: "https://x.com/nexos_ai",
-      linkedinFollowers: approxFollowers(16600, "LinkedIn"),
-      xFollowers: exactFollowers(165, "X"),
-      snapshotDate: DATASET_DATE,
-    },
-    models: metric(
-      official("200+", DATASET_DATE, {
-        sourceIds: ["site", "research"],
-        note: "Vendor floor for models reachable through one OpenAI-compatible endpoint. The product exposes no public catalogue endpoint.",
-      }),
-    ),
-    providers: metric(
-      notPublished("No upstream provider count is published in the vendor's public material."),
-    ),
-    routes: metric(notPublished("Multiple routes behind one endpoint; no route or endpoint count is published.")),
-    modalities: field(["llm", "image", "agents"], "vendor-stated", {
-      note: VENDOR_NOTE,
-      sources: ["site", "research"],
-      asOf: DATASET_DATE,
-    }),
-    openaiCompatible: field("yes", "vendor-stated", {
-      note: "The vendor states that 200+ models are reachable through one OpenAI-compatible API endpoint.",
-      sources: ["site", "research"],
-    }),
-    deployment: field(["hosted"], "vendor-stated", { sources: ["research"] }),
-    gatewayLocations: field(["Vilnius", "EU"], "vendor-stated", { sources: ["research"] }),
-    certifications: field(
-      ["ISO/IEC 27001", "ISO/IEC 42001", "SOC 2 Type II"],
-      "vendor-stated",
-      {
-        note: "The broadest certification set of any EU-incorporated entry here, and the only one stating ISO/IEC 42001 for AI management systems. The vendor also positions around GDPR, which is a regulation rather than a certification.",
-        sources: ["site"],
-      },
-    ),
-    euResidency: field("eu-by-default", "vendor-stated", {
-      note: "Positioned as EU-hosted without a region selection step.",
-      sources: ["site", "research"],
-      asOf: DATASET_DATE,
-    }),
-    zeroDataRetention: field("yes", "vendor-stated", {
-      note: "Zero-retention access is part of the vendor's published positioning.",
-      sources: ["site", "research"],
-    }),
-    pricingTransparency: field("public-with-enterprise", "verified", {
-      note: "A public pricing page is published; enterprise terms are quoted separately.",
-      sources: ["pricing", "research"],
-      asOf: DATASET_DATE,
-    }),
-    openSource: field("no", "verified", { sources: ["site"] }),
-    funding: funding(
-      2,
-      [
-        "Index Ventures",
-        "Evantic Capital",
-        "Creandum",
-        "Dig Ventures",
-        "Flat Capital",
-      ],
-      {
-        totalRaised: "$43M+",
-        note: "An $8M initial round and a $30M Series A; the company states more than $43M raised combined. Angel investors include the chief executives of Datadog, Klarna, Supercell and Wix.",
-      },
-    ),
-    observability: observability(
-      "detailed",
-      "An AI usage tracker covering requests, tokens, models and API keys by team, project and user, with latency, errors and throughput, cost breakdowns and audit logs.",
-    ),
-    strengths: [
-      "Largest company scale of any EU-incorporated entry here, at 51–200 employees.",
-      "Broadest certification set in the EU-incorporated group, and the only entry stating ISO/IEC 42001.",
-      "EU-hosted by default, with zero-retention positioning and a public pricing page.",
-    ],
-    limitations: [
-      "200+ models is a vendor floor, and no public endpoint was enumerated for a measured count.",
-      "No upstream provider count or route count is published.",
-    ],
-    bestFor: [
-      "Larger organisations that need governance, spend control and access control over internal AI use, from an EU vendor.",
-    ],
-    sources: [
-      researchSource(),
-      baselineSource(),
-      siteSource("https://nexos.ai"),
-      pricingSource("https://nexos.ai/pricing/"),
-      registrySource("Lithuanian register of legal entities — Spectra Tech, UAB"),
-      linkedinSource("https://www.linkedin.com/company/nexos-ai/"),
-      xSource("nexos_ai"),
-      fundingSource("nexos.ai announcements"),
-      observabilitySource("nexos.ai"),
-    ],
-    lastVerified: DATASET_DATE,
-  }),
-
-  createGateway({
     id: "edgee",
     slug: "edgee",
     name: "Edgee",
@@ -1179,7 +1056,6 @@ export const gateways: Gateway[] = [
       "Agent gateway with model routing, provider-route diversity and air-gapped deployment.",
     type: "managed",
     tier: "primary",
-    categories: ["provider-networks", "enterprise", "agent-gateways"],
     jurisdictionBucket: "unresolved",
     country: unverified(
       "The research pass records a French presence with an unresolved corporate structure, and earlier evidence pointed to both a French and a United States entity. No jurisdiction is assigned, and the entry is not counted as EU-incorporated.",
@@ -1296,7 +1172,6 @@ export const gateways: Gateway[] = [
       "Large multimodal model API with OpenAI/Anthropic-compatible interfaces and a broad catalogue.",
     type: "managed",
     tier: "primary",
-    categories: ["largest-model-catalogues", "multimodal"],
     jurisdictionBucket: "other",
     legalEntity: field("Boiler Labs FZ-LLC", "verified", {
       note: "Recorded in the September 8, 2026 legal baseline and confirmed by the September 17 research pass. Separately, the published terms name Estonian governing law, which does not match the UAE registration; the two observations are recorded side by side rather than reconciled.",
@@ -1414,7 +1289,6 @@ export const gateways: Gateway[] = [
       "Publicly enumerable multi-provider LLM gateway with transparent model/provider catalogue.",
     type: "managed",
     tier: "primary",
-    categories: ["largest-model-catalogues", "provider-networks"],
     jurisdictionBucket: "us",
     legalEntity: field("Polar Lights LLC", "verified", {
       sources: ["registry"],
@@ -1534,7 +1408,6 @@ export const gateways: Gateway[] = [
       "Hosted inference platform for open models across text, image, video and audio.",
     type: "managed",
     tier: "primary",
-    categories: ["largest-model-catalogues", "multimodal"],
     jurisdictionBucket: "unresolved",
     country: unverified(
       "The company operates from the United States and globally, but no operating entity or country of incorporation has been established from a registry or legal page. Incorporation is not inferred from operating locations.",
@@ -1639,7 +1512,6 @@ export const gateways: Gateway[] = [
       "Enterprise AI gateway/control plane with 1,000+ LLMs and customer-VPC/on-prem deployment.",
     type: "enterprise",
     tier: "primary",
-    categories: ["provider-networks", "eu-hosted", "multimodal", "enterprise", "agent-gateways"],
     jurisdictionBucket: "us",
     legalEntity: unverified(
       "Evidence about the operating entity conflicts and is not resolved. The research pass records the company as United States based but states that the legal entity should remain unresolved until a primary corporate source is confirmed.",
@@ -1772,7 +1644,6 @@ export const gateways: Gateway[] = [
       "Enterprise AI gateway with routing, guardrails, governance and an open-source gateway core.",
     type: "enterprise",
     tier: "primary",
-    categories: ["provider-networks", "multimodal", "enterprise", "open-source"],
     jurisdictionBucket: "us",
     country: field("United States", "verified", { sources: ["site", "research"], asOf: DATASET_DATE }),
     countryCode: field("US", "verified", { sources: ["site"] }),
@@ -1905,7 +1776,6 @@ export const gateways: Gateway[] = [
       "Open-source LLM observability platform with a gateway/proxy and managed routing.",
     type: "managed",
     tier: "primary",
-    categories: ["provider-networks", "multimodal", "open-source"],
     jurisdictionBucket: "us",
     legalEntity: field("Helicone, Inc.", "verified", { sources: ["site"], asOf: DATASET_DATE }),
     country: field("United States", "verified", { sources: ["site", "research"] }),
@@ -2019,7 +1889,6 @@ export const gateways: Gateway[] = [
     differentiator: "AI gateway/observability product formerly branded Keywords AI.",
     type: "managed",
     tier: "primary",
-    categories: ["provider-networks"],
     jurisdictionBucket: "us",
     legalEntity: field("Keywords AI, Inc.", "verified", {
       note: "The brand changed to Respan in February 2026; the registered entity name is unchanged.",
@@ -2126,7 +1995,6 @@ export const gateways: Gateway[] = [
       "Routing-first model router focused on automatic model selection and cost/quality trade-offs.",
     type: "managed",
     tier: "primary",
-    categories: ["provider-networks", "enterprise"],
     jurisdictionBucket: "us",
     legalEntity: field("Martian Learning, Inc.", "verified", {
       sources: ["site"],
@@ -2233,7 +2101,6 @@ export const gateways: Gateway[] = [
       "Multimodal inference platform for language, image, video and audio models.",
     type: "managed",
     tier: "additional",
-    categories: ["provider-networks", "multimodal"],
     jurisdictionBucket: "us",
     country: field("United States", "verified", {
       note: "LinkedIn confirms the AI Atlas Cloud entity is the Menlo Park company; it is not to be confused with unrelated Atlas Cloud companies.",
@@ -2330,7 +2197,6 @@ export const gateways: Gateway[] = [
       "OpenAI-compatible gateway with price/latency/throughput routing, fallback and BYOK.",
     type: "managed",
     tier: "additional",
-    categories: [],
     jurisdictionBucket: "unresolved",
     country: unverified(
       "Intentionally unresolved. The research pass records United States operations, but the published Terms contain an unfinished “[your jurisdiction]” placeholder, so no governing jurisdiction can be read from them and none is inferred from operating locations.",
@@ -2419,7 +2285,6 @@ export const gateways: Gateway[] = [
       "AI gateway/router project with insufficient independently verifiable corporate and catalogue metadata.",
     type: "managed",
     tier: "additional",
-    categories: [],
     jurisdictionBucket: "unresolved",
     country: unverified(
       "No jurisdiction established. Primary-source identity and corporate verification remained insufficient; data from unrelated RouteScope companies is deliberately not attached.",
@@ -2484,7 +2349,6 @@ export const gateways: Gateway[] = [
       "MIT-licensed open-source AI gateway/proxy with broad provider support and customer-configured model catalogues.",
     type: "self-hosted",
     tier: "self-hosted",
-    categories: ["provider-networks", "eu-hosted", "multimodal", "enterprise", "open-source"],
     jurisdictionBucket: "us",
     country: field("United States", "needs-verification", {
       note: "Maintained by BerriAI and recorded as United States based by the September 17, 2026 research pass. Registry confirmation is outstanding.",
@@ -2588,7 +2452,6 @@ export const gateways: Gateway[] = [
       "Enterprise API and AI gateway with policy, routing, governance and multi-cloud connectivity.",
     type: "self-hosted",
     tier: "self-hosted",
-    categories: ["provider-networks", "eu-hosted", "multimodal", "enterprise", "open-source"],
     jurisdictionBucket: "us",
     country: field("United States", "needs-verification", {
       note: "Kong Inc., recorded as United States based by the September 17, 2026 research pass. Registry confirmation is outstanding.",
@@ -2712,7 +2575,6 @@ export const gateways: Gateway[] = [
       "Open-source AI gateway built around Envoy Proxy and designed for self-hosted infrastructure.",
     type: "self-hosted",
     tier: "self-hosted",
-    categories: ["provider-networks", "eu-hosted", "enterprise", "open-source"],
     jurisdictionBucket: "unresolved",
     country: notApplicable(
       "A community-governed open-source project rather than a single operating company. Treated as a project, not a standalone company.",
@@ -2811,7 +2673,6 @@ export const gateways: Gateway[] = [
       "AWS-managed foundation-model platform with regional infrastructure, marketplace and native AWS governance.",
     type: "hyperscaler",
     tier: "hyperscaler",
-    categories: ["eu-hosted", "multimodal", "enterprise"],
     jurisdictionBucket: "us",
     country: field("United States", "verified", {
       note: "Operated by Amazon Web Services, Inc.",
@@ -2925,7 +2786,6 @@ export const gateways: Gateway[] = [
       "Google Cloud enterprise AI platform with managed model access, regional deployment and Google-native controls.",
     type: "hyperscaler",
     tier: "hyperscaler",
-    categories: ["eu-hosted", "multimodal", "enterprise"],
     jurisdictionBucket: "us",
     country: field("United States", "verified", {
       note: "Operated by Google LLC.",
@@ -3043,7 +2903,6 @@ export const gateways: Gateway[] = [
       "Microsoft enterprise AI platform with a very large model catalogue and Azure-native governance/deployment.",
     type: "hyperscaler",
     tier: "hyperscaler",
-    categories: ["largest-model-catalogues", "eu-hosted", "multimodal", "enterprise"],
     jurisdictionBucket: "us",
     country: field("United States", "verified", {
       note: "Operated by Microsoft Corporation.",

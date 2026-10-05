@@ -3,9 +3,8 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 import { SITE } from "@/data/site";
-import { DATASET_DATE } from "@/data/gateways";
-import { allGateways } from "@/lib/gateway";
-import { buildSearchIndex } from "@/lib/search";
+import { changelog } from "@/data/changelog";
+import { fetchStarCount } from "@/lib/github";
 import { THEME_SCRIPT } from "@/lib/theme";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import { Header } from "@/components/layout/header";
@@ -60,8 +59,11 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const searchIndex = buildSearchIndex(allGateways());
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // The footer shows the date of the newest logged change, dataset or site.
+  const lastUpdated = changelog.map((entry) => entry.date).sort().pop() ?? "";
+  // Read once at build time; see lib/github.ts.
+  const stars = await fetchStarCount();
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -78,9 +80,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* One provider at the root so any tooltip works on any page; nested
             providers inside the table are harmless. */}
         <TooltipProvider delayDuration={120}>
-          <Header searchIndex={searchIndex} />
+          <Header stars={stars} />
           <main id="main">{children}</main>
-          <Footer datasetDate={DATASET_DATE} />
+          <Footer updatedAt={lastUpdated} />
         </TooltipProvider>
         <JsonLd data={[websiteJsonLd(), organizationJsonLd()]} />
       </body>

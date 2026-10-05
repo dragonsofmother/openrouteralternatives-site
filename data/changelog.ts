@@ -8,6 +8,49 @@ import type { ChangelogEntry } from "@/types";
  */
 export const changelog: ChangelogEntry[] = [
   {
+    date: "2026-10-05",
+    kind: "dataset",
+    title: "nexos.ai removed; Cortecs size band corrected",
+    summary:
+      "nexos.ai is no longer tracked in this revision, taking the dataset from 24 to 23 gateways; its record remains in the repository history and its logo file was removed with it. Cortecs' LinkedIn company-size band is corrected from 11-50 to 2-10.",
+    changes: [
+      { gateway: "nexos-ai", field: "Entry", previous: "Listed", next: "Removed from the dataset", source: "Oct 5, 2026 dataset revision" },
+      { gateway: "cortecs", field: "Employees", previous: "11-50", next: "2-10", source: "LinkedIn company page, checked Oct 5, 2026" },
+    ],
+  },
+  {
+    date: "2026-10-05",
+    kind: "site",
+    title: "Filtered views ordered by model count",
+    summary:
+      "Model count is now the table's second order. With no explicit column sort, a filtered view is ordered by model count, largest first, instead of alphabetically; under any column sort, model count breaks ties. The unfiltered, unsorted table still opens alphabetically, and rows without a count stay at the bottom in every case. The introduction above the table was reduced to a two-line strip and the filter bar to a single row: jurisdiction and EU residency stay as selects, while gateway type, deployment and modalities moved into a More filters menu whose active choices are echoed as removable chips. The column picker was removed with the seven columns only it could reveal; those attributes remain in every expanded row.",
+    changes: [
+      { gateway: null, field: "Table order", previous: "Alphabetical unless a column is sorted", next: "Alphabetical when unfiltered; model count, largest first, once a filter is applied; model count as the tiebreak under any column sort", source: "Oct 5, 2026 site revision" },
+    ],
+  },
+  {
+    date: "2026-10-04",
+    kind: "model-catalogue",
+    title: "Eden AI catalogue floor recorded at 1,000+; Requesty website moved to requesty.eu",
+    summary:
+      "Eden AI's current model figure is the vendor's stated floor of 1,000+ models across every modality. The 870-model catalogue count of September 17, 2026 and the 638 LLM models measured on September 15, 2026 stay in the metric's history, and the figure is never compared with measured LLM-only catalogues. Requesty's website, official-site and documentation links now point at requesty.eu, which serves the same pages; the public models endpoint stays on router.requesty.ai because that is the host the count was measured from.",
+    changes: [
+      { gateway: "eden-ai", field: "Models", previous: "870 catalogue (all modalities)", next: "1,000+ official floor (all modalities); 870 catalogue and 638 measured kept in history", source: "edenai.co" },
+      { gateway: "requesty", field: "Website, site and docs sources", previous: "requesty.ai", next: "requesty.eu (models endpoint unchanged on router.requesty.ai)", source: "requesty.eu" },
+    ],
+  },
+  {
+    date: "2026-10-04",
+    kind: "site",
+    title: "Site reduced to the comparison table, the methodology, how to contribute and the why page",
+    summary:
+      "Category pages and their rankings, gateway profile pages, the directory index, the full-width table route, the blog, the site search, the trust strip, the use-case cards, the featured entries and the EU explainer section were removed. The homepage now carries the table, the methodology and the contribution section, and /why remains. The table no longer sorts on the gateway name or jurisdiction columns, every other column sorts in a single declared direction, and the per-record categories list was dropped from the dataset because nothing reads it any more. The default table view carries ten columns sized in proportion so they fit a laptop screen without horizontal scrolling: providers and routes share a column, deployment and zero data retention share a column, and funding, observability, ownership, pricing, gateway location and social reach are available from the Columns menu and in every expanded row. No figure changed.",
+    changes: [
+      { gateway: null, field: "Categories", previous: "Eight category pages and a per-record category list", next: "Removed", source: "Oct 4, 2026 site revision" },
+      { gateway: null, field: "Table sorting", previous: "Every column sortable in both directions", next: "Gateway and jurisdiction not sortable; every other column sorts in one declared direction", source: "Oct 4, 2026 site revision" },
+    ],
+  },
+  {
     date: "2026-09-21",
     kind: "dataset",
     title: "Four entries removed; Azure AI Foundry catalogue measured; Eden AI providers re-counted",

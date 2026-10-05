@@ -33,7 +33,6 @@ identification only. No logo was taken from a third-party logo directory.
 | `litellm.png` | LiteLLM | litellm.ai site icon (Webflow asset CDN) |
 | `llmgateway.svg` | llmgateway.io | The icon paths of the inline `LLM Gateway` wordmark SVG on llmgateway.io, filled dark as the site itself renders it on light backgrounds. The apple-touch-icon is a white-on-transparent mark and was invisible in the white logo box. |
 | `martian.png` | Martian | withmartian.com site icon (Webflow asset CDN) |
-| `nexos-ai.png` | nexos.ai | nexos.ai `apple-touch-icon` 180 px (served from the company's own sb.nordcdn.com asset CDN) |
 | `novita-ai.png` | Novita AI | novita.ai/favicon-dark.ico (256 px PNG entry) |
 | `opper.png` | Opper AI | opper.ai/images/icon-dark.png |
 | `portkey.png` | Portkey | portkey.ai site icon (Framer asset CDN), 64 px |

@@ -191,23 +191,23 @@ export const TABLE_MAPPING = [
   {
     column: "Gateway location",
     question: "Where does a request land first, and where are request and response logs stored?",
-    href: "/#eu-explainer",
+    href: "/#eu-residency",
   },
   {
     column: "EU residency and inference location",
     question:
       "For the models actually in use, where does inference run, and is EU processing the default, a setting or an enterprise-only option?",
-    href: "/categories/eu-hosted",
+    href: "/#eu-residency",
   },
   {
     column: "Zero data retention",
     question: "Is content kept at all once the response has been returned, and for how long?",
-    href: "/#eu-residency",
+    href: "/#def-zdr",
   },
   {
     column: "Deployment",
     question:
       "Can the gateway run in the customer's own cloud or on-premise, so that no third party sits in the request path?",
-    href: "/categories/open-source",
+    href: "/#compare",
   },
 ] as const;

@@ -2,19 +2,20 @@
 
 import * as React from "react";
 import { flexRender, useTable } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ChevronsUpDown, SearchX } from "lucide-react";
+import { ArrowDown, SearchX } from "lucide-react";
 import type { Gateway } from "@/types";
-import { EMPTY_FILTERS, filterGateways, type GatewayFilters } from "@/lib/gateway";
+import {
+  EMPTY_FILTERS,
+  activeFilterCount,
+  filterGateways,
+  type GatewayFilters,
+} from "@/lib/gateway";
 import {
   gatewayTableFeatures,
   type GatewayColumnDef,
   type GatewayColumnMeta,
 } from "@/lib/table";
-import {
-  COLUMN_LABELS,
-  DEFAULT_HIDDEN_COLUMNS,
-  columns as defaultColumns,
-} from "@/components/comparison/columns";
+import { columns as defaultColumns } from "@/components/comparison/columns";
 import { ExpandedRow } from "@/components/comparison/expanded-row";
 import { FilterBar } from "@/components/comparison/filter-bar";
 import { MobileGatewayCard } from "@/components/comparison/mobile-card";
@@ -24,9 +25,15 @@ import { cn } from "@/lib/utils";
 /**
  * The comparison table.
  *
- * Default sort is alphabetical by gateway name — never a ranking that places
- * one company first. Sorting, column visibility and row expansion are driven
- * from the same canonical dataset that the profile pages read.
+ * Rows arrive alphabetical by gateway name and open that way — never a
+ * ranking that places one company first. Each sortable column sorts in one
+ * declared direction (`sortDescFirst` on the column), so a sort can never be
+ * reversed to promote rows that hold no value. The gateway name and
+ * jurisdiction columns do not sort at all.
+ *
+ * Model count is always the second order: a filtered view with no explicit
+ * sort is ordered by it, largest first, and it breaks ties under any column
+ * sort. Rows without a count stay at the bottom either way.
  */
 export function ComparisonTable({
   gateways,
@@ -45,23 +52,26 @@ export function ComparisonTable({
     ...EMPTY_FILTERS,
     ...initialFilters,
   });
-  const [sorting, setSorting] = React.useState([{ id: "gateway", desc: false }]);
-  const [columnVisibility, setColumnVisibility] = React.useState<Record<string, boolean>>(
-    Object.fromEntries(DEFAULT_HIDDEN_COLUMNS.map((id) => [id, false])),
-  );
+  const [sorting, setSorting] = React.useState<{ id: string; desc: boolean }[]>([]);
 
   const data = React.useMemo(
     () => (showFilters ? filterGateways(gateways, filters) : gateways),
     [gateways, filters, showFilters],
   );
 
+  const hasActiveFilters = showFilters && activeFilterCount(filters) > 0;
+  const effectiveSorting = React.useMemo(() => {
+    if (sorting.some((entry) => entry.id === "models")) return sorting;
+    if (sorting.length === 0 && !hasActiveFilters) return sorting;
+    return [...sorting, { id: "models", desc: true }];
+  }, [sorting, hasActiveFilters]);
+
   const table = useTable({
     features: gatewayTableFeatures,
     data,
     columns,
-    state: { sorting, columnVisibility },
+    state: { sorting: effectiveSorting },
     onSortingChange: setSorting,
-    onColumnVisibilityChange: setColumnVisibility,
     getRowCanExpand: () => true,
     getRowId: (row) => row.id,
     enableSortingRemoval: false,
@@ -75,18 +85,20 @@ export function ComparisonTable({
     setFilters({ ...EMPTY_FILTERS, ...initialFilters });
   }, [initialFilters]);
 
-  const columnToggles = table
-    .getAllLeafColumns()
-    .filter((column) => column.getCanHide() && COLUMN_LABELS[column.id])
-    .map((column) => ({
-      id: column.id,
-      label: COLUMN_LABELS[column.id] ?? column.id,
-      visible: column.getIsVisible(),
-      toggle: () => column.toggleVisibility(),
-    }));
-
   const rows = table.getRowModel().rows;
-  const visibleColumnCount = table.getVisibleLeafColumns().length;
+  const visibleColumns = table.getVisibleLeafColumns();
+  const visibleColumnCount = visibleColumns.length;
+
+  // Preferred widths become proportions of the visible set, so the columns
+  // fill the container instead of forcing a horizontal scroll. The table only
+  // scrolls once the viewport is narrower than roughly three quarters of the
+  // visible columns' preferred widths put together.
+  const totalWidth = visibleColumns.reduce(
+    (sum, column) =>
+      sum + ((column.columnDef.meta as GatewayColumnMeta | undefined)?.width ?? 120),
+    0,
+  );
+  const widthFor = (width?: number) => `${(((width ?? 120) / totalWidth) * 100).toFixed(3)}%`;
 
   // The table scrolls horizontally, so an expanded row would otherwise be laid
   // out at the full scroll width and run off the right edge. Pin it to the left
@@ -111,19 +123,21 @@ export function ComparisonTable({
             onReset={resetFilters}
             resultCount={data.length}
             totalCount={gateways.length}
-            columnToggles={columnToggles}
           />
         ) : null}
 
-        {/* Desktop and tablet: full table, sticky header, sticky first column. */}
+        {/* Desktop: full table with proportional columns, sticky header and sticky first column. */}
         <div
           ref={scrollRef}
           className={cn(
-            "scroll-shadow-x hidden overflow-x-auto border border-line bg-surface shadow-card md:block",
+            "scroll-shadow-x hidden overflow-x-auto border border-line bg-surface shadow-card lg:block",
             showFilters ? "rounded-b-card" : "rounded-card",
           )}
         >
-          <table className="w-full border-collapse text-left">
+          <table
+            className="w-full table-fixed border-collapse text-left"
+            style={{ minWidth: Math.round(totalWidth * 0.78) }}
+          >
             {caption ? <caption className="sr-only">{caption}</caption> : null}
             <thead className="sticky top-0 z-20">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -132,21 +146,24 @@ export function ComparisonTable({
                     const meta = header.column.columnDef.meta as GatewayColumnMeta | undefined;
                     const canSort = header.column.getCanSort();
                     const sorted = header.column.getIsSorted();
+                    // Only the leading sort is announced; the model-count
+                    // tiebreak is shown as a muted arrow.
+                    const isPrimary = Boolean(sorted) && header.column.getSortIndex() === 0;
 
                     return (
                       <th
                         key={header.id}
                         scope="col"
                         aria-sort={
-                          sorted === "asc"
-                            ? "ascending"
-                            : sorted === "desc"
-                              ? "descending"
-                              : canSort
-                                ? "none"
-                                : undefined
+                          isPrimary
+                            ? sorted === "asc"
+                              ? "ascending"
+                              : "descending"
+                            : canSort
+                              ? "none"
+                              : undefined
                         }
-                        style={meta?.width ? { width: meta.width, minWidth: meta.width } : undefined}
+                        style={{ width: widthFor(meta?.width) }}
                         className={cn(
                           "border-b border-line bg-subtle px-3 py-2.5 text-[11px] font-semibold uppercase tracking-[0.07em] text-ink-muted first:pl-4 last:pr-4",
                           index === 0 && "sticky left-0 z-10",
@@ -156,20 +173,25 @@ export function ComparisonTable({
                         {canSort ? (
                           <button
                             type="button"
-                            onClick={header.column.getToggleSortingHandler()}
+                            onClick={() =>
+                              header.column.toggleSorting(
+                                header.column.columnDef.sortDescFirst ?? false,
+                              )
+                            }
                             className={cn(
                               "group inline-flex items-center gap-1.5 rounded transition-colors hover:text-ink",
                               meta?.align === "right" && "flex-row-reverse",
-                              sorted && "text-ink",
+                              isPrimary && "text-ink",
                             )}
                           >
                             {flexRender(header.column.columnDef.header, header.getContext())}
-                            {sorted === "asc" ? (
-                              <ArrowUp aria-hidden="true" className="size-3" />
-                            ) : sorted === "desc" ? (
-                              <ArrowDown aria-hidden="true" className="size-3" />
+                            {sorted ? (
+                              <ArrowDown
+                                aria-hidden="true"
+                                className={cn("size-3", !isPrimary && "opacity-40")}
+                              />
                             ) : (
-                              <ChevronsUpDown
+                              <ArrowDown
                                 aria-hidden="true"
                                 className="size-3 opacity-0 transition-opacity group-hover:opacity-50"
                               />
@@ -238,8 +260,8 @@ export function ComparisonTable({
           </table>
         </div>
 
-        {/* Mobile: one card per gateway rather than a thirteen-column table. */}
-        <div className="flex flex-col gap-3 md:hidden">
+        {/* Below the lg breakpoint: one card per gateway rather than a squeezed table. */}
+        <div className="flex flex-col gap-3 lg:hidden">
           {showFilters ? <div className="h-3" aria-hidden="true" /> : null}
           {rows.length === 0 ? (
             <div className="rounded-card border border-line bg-surface px-4 py-12 shadow-card">

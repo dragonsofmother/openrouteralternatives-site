@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import { Container } from "@/components/layout/container";
 
 interface Crumb {
@@ -41,7 +40,7 @@ export function PageHeader({
                       <Link href={crumb.path} className="hover:text-ink">
                         {crumb.name}
                       </Link>
-                      <ChevronRight aria-hidden="true" className="size-3" />
+                      <span aria-hidden="true" className="px-0.5 text-ink-subtle">/</span>
                     </>
                   )}
                 </li>
@@ -52,11 +51,11 @@ export function PageHeader({
 
         <div className="py-9">
           {eyebrow ? (
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-subtle">
-              {eyebrow}
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-ink">
+              # {eyebrow}
             </p>
           ) : null}
-          <h1 className="mt-2 max-w-3xl text-balance text-[30px] font-semibold tracking-[-0.03em] text-ink sm:text-[36px]">
+          <h1 className="mt-2 max-w-3xl text-balance text-[26px] font-bold tracking-[-0.02em] text-ink sm:text-[30px]">
             {title}
           </h1>
           {description ? (

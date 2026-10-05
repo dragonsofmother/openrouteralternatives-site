@@ -116,7 +116,7 @@ function Details({
 
 function Rule({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-card border-l-2 border-brand bg-brand-subtle px-4 py-3 text-[13.5px] leading-relaxed text-brand-ink">
+    <p className="border border-dashed border-brand-line bg-brand-subtle px-4 py-3 text-[13.5px] leading-relaxed text-brand-ink">
       {children}
     </p>
   );
@@ -171,7 +171,9 @@ export function Methodology() {
         <dl className="mt-8 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
           {DEFINITIONS.map((entry) => (
             <div key={entry.id} id={entry.id} className="scroll-mt-20 bg-surface p-5">
-              <dt className="text-[13.5px] font-semibold text-ink">{entry.term}</dt>
+              <dt className="text-[11px] font-bold uppercase tracking-[0.1em] text-brand-ink">
+                ## {entry.term}
+              </dt>
               <dd className="mt-1.5 text-[13px] leading-relaxed text-ink-muted">
                 {entry.definition}
               </dd>

@@ -9,6 +9,16 @@ import type { ChangelogEntry } from "@/types";
 export const changelog: ChangelogEntry[] = [
   {
     date: "2026-10-05",
+    kind: "site",
+    title: "Terminal look, in light and dark",
+    summary:
+      "The site is restyled as a terminal: one monospace face, square corners, no shadows, dashed rules, a shell prompt as the wordmark, bracketed navigation, command-line flags for the filters and status glyphs instead of icons under every figure. The light palette is paper and ink with a deep green accent; the dark palette is a phosphor display. Nothing in the data or the table's behaviour changed.",
+    changes: [
+      { gateway: null, field: "Appearance", previous: "Sans-serif product styling with rounded cards", next: "Monospace terminal styling with paper and phosphor palettes", source: "Oct 5, 2026 site revision" },
+    ],
+  },
+  {
+    date: "2026-10-05",
     kind: "dataset",
     title: "nexos.ai removed; Cortecs size band corrected",
     summary:

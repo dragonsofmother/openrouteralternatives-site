@@ -1,6 +1,5 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
 import type { Gateway } from "@/types";
 import type { GatewayColumnDef, GatewayRow } from "@/lib/table";
 import { numeric } from "@/lib/table";
@@ -193,12 +192,14 @@ function ExpandButton({ row }: { row: GatewayRow }) {
       onClick={row.getToggleExpandedHandler()}
       aria-expanded={expanded}
       aria-label={`${expanded ? "Hide" : "Show"} details for ${row.original.name}`}
-      className="inline-flex size-7 items-center justify-center rounded-md border border-line bg-surface text-ink-subtle transition-colors hover:border-line-strong hover:text-ink"
+      className="inline-flex size-7 items-center justify-center border border-line bg-surface text-ink-subtle transition-colors hover:border-line-strong hover:text-ink"
     >
-      <ChevronDown
+      <span
         aria-hidden="true"
-        className={cn("size-3.5 transition-transform duration-200", expanded && "rotate-180")}
-      />
+        className={cn("inline-block text-[12px] transition-transform duration-200", expanded && "rotate-90")}
+      >
+        ▸
+      </span>
     </button>
   );
 }

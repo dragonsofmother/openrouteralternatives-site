@@ -1,21 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 import { SITE } from "@/data/site";
 import { changelog } from "@/data/changelog";
 import { fetchStarCount } from "@/lib/github";
+import { allGateways } from "@/lib/gateway";
 import { THEME_SCRIPT } from "@/lib/theme";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { TooltipProvider } from "@/components/ui/tooltip";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -70,7 +65,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
+      <body className={`${jetbrainsMono.variable} antialiased`}>
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:border focus:border-line focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:text-ink focus:shadow-pop"
@@ -82,7 +77,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <TooltipProvider delayDuration={120}>
           <Header stars={stars} />
           <main id="main">{children}</main>
-          <Footer updatedAt={lastUpdated} />
+          <Footer updatedAt={lastUpdated} gatewayCount={allGateways().length} />
         </TooltipProvider>
         <JsonLd data={[websiteJsonLd(), organizationJsonLd()]} />
       </body>

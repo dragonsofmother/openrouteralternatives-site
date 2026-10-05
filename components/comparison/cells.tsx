@@ -8,6 +8,7 @@ import type {
   OpenAiCompatibility,
 } from "@/types";
 import {
+  type Tone,
   CAPABILITY,
   DEPLOYMENT,
   EU_RESIDENCY,
@@ -31,6 +32,33 @@ import {
 } from "@/components/ui/data-status";
 import { GatewayLogo } from "@/components/gateways/gateway-logo";
 import { cn } from "@/lib/utils";
+
+/** Text colour per tone; the glyph or word beside it carries the meaning. */
+const TONE_TEXT: Record<Tone, string> = {
+  ok: "text-ok",
+  info: "text-info",
+  warn: "text-warn",
+  caution: "text-caution",
+  neutral: "text-ink-subtle",
+  brand: "text-brand-ink",
+};
+
+/** Residency and capability labels get a filled, half or empty mark by tone. */
+const TONE_GLYPH: Record<Tone, string> = {
+  ok: "●",
+  info: "◐",
+  warn: "△",
+  caution: "△",
+  neutral: "○",
+  brand: "●",
+};
+
+const OPENAI_GLYPH: Record<OpenAiCompatibility, string> = {
+  yes: "✓",
+  partial: "~",
+  no: "✗",
+  unknown: "?",
+};
 
 /**
  * Gateway name cell: mark, name linked to the vendor's own site where one is
@@ -238,10 +266,12 @@ export function JurisdictionCell({ gateway }: { gateway: Gateway }) {
         <NoValue compact field={country} />
       )}
       <InfoTip label={bucket.description}>
-        <button type="button" className="cursor-help" aria-label={bucket.description}>
-          <Badge tone={bucket.tone} size="xs">
-            {bucket.badge ?? bucket.label}
-          </Badge>
+        <button
+          type="button"
+          className={cn("cursor-help text-[11px] lowercase", TONE_TEXT[bucket.tone])}
+          aria-label={bucket.description}
+        >
+          [{bucket.badge ?? bucket.label}]
         </button>
       </InfoTip>
     </div>
@@ -257,10 +287,12 @@ export function ResidencyCell({ gateway }: { gateway: Gateway }) {
 
   return (
     <InfoTip label={description}>
-      <button type="button" className="cursor-help" aria-label={`${term.label}: ${description}`}>
-        <Badge tone={term.tone} size="xs" dot>
-          {term.label}
-        </Badge>
+      <button
+        type="button"
+        className={cn("cursor-help text-left text-[12.5px] leading-snug", TONE_TEXT[term.tone])}
+        aria-label={`${term.label}: ${description}`}
+      >
+        <span aria-hidden="true">{TONE_GLYPH[term.tone]}</span> {term.label}
       </button>
     </InfoTip>
   );
@@ -321,10 +353,12 @@ export function CapabilityCell({ field }: { field: Field<Capability> }) {
 
   return (
     <InfoTip label={description}>
-      <button type="button" className="cursor-help" aria-label={`${term.label}: ${description}`}>
-        <Badge tone={term.tone} size="xs">
-          {term.label}
-        </Badge>
+      <button
+        type="button"
+        className={cn("cursor-help text-[12.5px] lowercase", TONE_TEXT[term.tone])}
+        aria-label={`${term.label}: ${description}`}
+      >
+        {term.label}
       </button>
     </InfoTip>
   );
@@ -360,10 +394,16 @@ export function OpenAiCompatibilityCell({
         className="cursor-help"
         aria-label={`OpenAI compatible: ${description}`}
       >
-        <Badge tone={recorded ? term.tone : "neutral"} size={size} dot={recorded}>
-          {term.label}
+        <span
+          className={cn(
+            "whitespace-nowrap lowercase",
+            size === "sm" ? "text-[13px]" : "text-[12.5px]",
+            recorded ? TONE_TEXT[term.tone] : "text-ink-subtle",
+          )}
+        >
+          <span aria-hidden="true">{OPENAI_GLYPH[key]}</span> {term.label}
           {recorded ? <ProvenanceGlyph field={field} /> : null}
-        </Badge>
+        </span>
       </button>
     </InfoTip>
   );

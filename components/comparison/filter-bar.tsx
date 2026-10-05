@@ -26,21 +26,23 @@ const FILTERABLE_MODALITIES: Modality[] = MODALITY_ORDER.filter(
 );
 
 const MENU_CONTENT =
-  "z-50 max-h-[28rem] w-64 overflow-y-auto rounded-xl border border-line bg-surface p-1.5 shadow-pop animate-fade-up";
+  "z-50 max-h-[28rem] w-64 overflow-y-auto border border-line-strong bg-surface p-1.5 animate-fade-up";
 const MENU_LABEL = "px-2 pb-1 pt-2 text-[11px] font-medium uppercase tracking-[0.07em] text-ink-subtle";
 const MENU_ITEM =
   "flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 text-[13px] text-ink outline-none data-[highlighted]:bg-subtle";
 
 /**
- * Compact select. The field name is the "all" option, so the control labels
- * itself and no label row is needed above the bar.
+ * A select written as a command flag: the label is the flag name, the
+ * default option reads "any".
  */
 function Select<T extends string>({
+  flag,
   label,
   value,
   options,
   onChange,
 }: {
+  flag: string;
   label: string;
   value: T | "all";
   options: { value: T; label: string }[];
@@ -50,30 +52,32 @@ function Select<T extends string>({
   const isActive = value !== "all";
 
   return (
-    <div className="relative">
-      <label htmlFor={id} className="sr-only">
-        {label}
+    <div className="flex items-center gap-2">
+      <label htmlFor={id} className="whitespace-nowrap text-[12px] text-ink-muted">
+        <span className="sr-only">{label} </span>--{flag}
       </label>
-      <select
-        id={id}
-        value={value}
-        onChange={(event) => onChange(event.target.value as T | "all")}
-        className={cn(
-          "h-9 max-w-[13rem] appearance-none rounded-lg border bg-surface py-0 pl-3 pr-8 text-[13px] transition-colors hover:border-line-strong",
-          isActive ? "border-brand-line bg-brand-subtle font-medium text-brand-ink" : "border-line text-ink",
-        )}
-      >
-        <option value="all">{label}</option>
+      <div className="relative">
+        <select
+          id={id}
+          value={value}
+          onChange={(event) => onChange(event.target.value as T | "all")}
+          className={cn(
+            "h-9 max-w-[13rem] appearance-none border bg-canvas py-0 pl-3 pr-8 text-[13px] transition-colors hover:border-line-strong",
+            isActive ? "border-brand-line bg-brand-subtle font-bold text-brand-ink" : "border-line text-ink",
+          )}
+        >
+        <option value="all">any</option>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>
         ))}
-      </select>
-      <ChevronDown
-        aria-hidden="true"
-        className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-ink-subtle"
-      />
+        </select>
+        <ChevronDown
+          aria-hidden="true"
+          className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-ink-subtle"
+        />
+      </div>
     </div>
   );
 }
@@ -173,27 +177,30 @@ export function FilterBar({
   }
 
   return (
-    <div className="rounded-card border border-line bg-surface lg:rounded-b-none lg:border-b-0">
+    <div className="border border-line-strong bg-surface lg:border-b-0">
       <div className="flex flex-wrap items-center gap-2 p-3">
-        <div className="relative min-w-[12rem] flex-1 basis-full sm:basis-auto">
-          <label htmlFor={searchId} className="sr-only">
-            Search
+        <div className="flex min-w-[14rem] flex-1 basis-full items-center gap-2 sm:basis-auto">
+          <label htmlFor={searchId} className="whitespace-nowrap text-[12px] text-ink-muted">
+            <span className="sr-only">Search </span>--search
           </label>
-          <Search
-            aria-hidden="true"
-            className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-subtle"
-          />
-          <input
-            id={searchId}
-            type="search"
-            value={filters.search}
-            onChange={(event) => onChange({ search: event.target.value })}
-            placeholder="Search gateways, providers or capabilities..."
-            className="h-9 w-full rounded-lg border border-line bg-surface pl-9 pr-3 text-[13px] text-ink transition-colors placeholder:text-ink-subtle hover:border-line-strong"
-          />
+          <div className="relative min-w-0 flex-1">
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-subtle"
+            />
+            <input
+              id={searchId}
+              type="search"
+              value={filters.search}
+              onChange={(event) => onChange({ search: event.target.value })}
+              placeholder="gateway, provider, capability…"
+              className="h-9 w-full border border-line bg-canvas pl-9 pr-3 text-[13px] text-ink transition-colors placeholder:text-ink-subtle hover:border-line-strong"
+            />
+          </div>
         </div>
 
         <Select
+          flag="jurisdiction"
           label="Jurisdiction"
           value={filters.jurisdiction}
           onChange={(value) => onChange({ jurisdiction: value })}
@@ -203,6 +210,7 @@ export function FilterBar({
           }))}
         />
         <Select
+          flag="residency"
           label="EU residency"
           value={filters.residency}
           onChange={(value) => onChange({ residency: value })}
@@ -218,14 +226,14 @@ export function FilterBar({
             <button
               type="button"
               className={cn(
-                "inline-flex h-9 items-center gap-2 rounded-lg border px-3 text-[13px] transition-colors",
+                "inline-flex h-9 items-center gap-2 border px-3 text-[13px] transition-colors",
                 moreCount > 0
                   ? "border-brand-line bg-brand-subtle text-brand-ink"
-                  : "border-line bg-surface text-ink-muted hover:border-line-strong hover:text-ink",
+                  : "border-line bg-canvas text-ink-muted hover:border-line-strong hover:text-ink",
               )}
             >
               <SlidersHorizontal aria-hidden="true" className="size-3.5" />
-              More filters
+              + more flags
               {moreCount > 0 ? (
                 <Badge tone="brand" size="xs">
                   {moreCount}
@@ -298,8 +306,8 @@ export function FilterBar({
 
         <div className="ml-auto flex items-center gap-3">
           <p aria-live="polite" className="text-[12.5px] text-ink-muted">
-            <span className="tnum font-medium text-ink">{resultCount}</span> of{" "}
-            <span className="tnum">{totalCount}</span>
+            <span className="tnum font-bold text-ink">{resultCount}</span>/
+            <span className="tnum">{totalCount}</span> rows
           </p>
           {hasFilters ? (
             <button

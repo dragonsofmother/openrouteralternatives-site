@@ -130,8 +130,7 @@ export function ComparisonTable({
         <div
           ref={scrollRef}
           className={cn(
-            "scroll-shadow-x hidden overflow-x-auto border border-line bg-surface shadow-card lg:block",
-            showFilters ? "rounded-b-card" : "rounded-card",
+            "scroll-shadow-x hidden overflow-x-auto border border-line-strong bg-surface lg:block",
           )}
         >
           <table
@@ -165,7 +164,7 @@ export function ComparisonTable({
                         }
                         style={{ width: widthFor(meta?.width) }}
                         className={cn(
-                          "border-b border-line bg-subtle px-3 py-2.5 text-[11px] font-semibold uppercase tracking-[0.07em] text-ink-muted first:pl-4 last:pr-4",
+                          "border-b border-line-strong bg-subtle px-3 py-2.5 text-[11px] font-medium uppercase tracking-[0.1em] text-ink-muted first:pl-4 last:pr-4",
                           index === 0 && "sticky left-0 z-10",
                           meta?.align === "right" && "text-right",
                         )}
@@ -219,7 +218,7 @@ export function ComparisonTable({
                   <React.Fragment key={row.id}>
                     <tr
                       className={cn(
-                        "group border-b border-line transition-colors last:border-b-0",
+                        "group border-b border-dashed border-line transition-colors last:border-b-0",
                         row.getIsExpanded() ? "bg-subtle" : "hover:bg-subtle",
                       )}
                     >
@@ -242,7 +241,7 @@ export function ComparisonTable({
                       })}
                     </tr>
                     {row.getIsExpanded() ? (
-                      <tr className="border-b border-line">
+                      <tr className="border-b border-dashed border-line">
                         <td colSpan={visibleColumnCount} className="p-0">
                           <div
                             className="sticky left-0"
@@ -264,7 +263,7 @@ export function ComparisonTable({
         <div className="flex flex-col gap-3 lg:hidden">
           {showFilters ? <div className="h-3" aria-hidden="true" /> : null}
           {rows.length === 0 ? (
-            <div className="rounded-card border border-line bg-surface px-4 py-12 shadow-card">
+            <div className="border border-line-strong bg-surface px-4 py-12">
               <EmptyState onReset={resetFilters} />
             </div>
           ) : (
@@ -291,7 +290,7 @@ function EmptyState({ onReset }: { onReset: () => void }) {
       <button
         type="button"
         onClick={onReset}
-        className="mt-4 rounded-lg border border-line bg-surface px-3 py-1.5 text-[13px] text-ink transition-colors hover:bg-subtle"
+        className="mt-4 border border-line-strong bg-surface px-3 py-1.5 text-[13px] text-ink transition-colors hover:bg-subtle"
       >
         Clear filters
       </button>

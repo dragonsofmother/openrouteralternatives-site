@@ -35,8 +35,8 @@ interface Term {
  */
 interface MetricTerm extends Term {
   short: string;
-  /** Lucide icon name, resolved by the metric component. */
-  icon: string;
+  /** One glyph, printed in the legend and under every figure. */
+  glyph: string;
 }
 
 export const METRIC_STATUS: Record<MetricStatus, MetricTerm> = {
@@ -46,7 +46,7 @@ export const METRIC_STATUS: Record<MetricStatus, MetricTerm> = {
     description:
       "Counted by this project directly from the provider's public model catalogue or API on the date shown.",
     tone: "ok",
-    icon: "CircleCheckBig",
+    glyph: "●",
   },
   official: {
     label: "Officially published",
@@ -54,7 +54,7 @@ export const METRIC_STATUS: Record<MetricStatus, MetricTerm> = {
     description:
       "A current figure the provider publishes in its own documentation or product pages. Not a direct measurement, and it may use a different counting rule.",
     tone: "info",
-    icon: "FileCheck",
+    glyph: "○",
   },
   catalogue: {
     label: "Official catalogue",
@@ -62,7 +62,7 @@ export const METRIC_STATUS: Record<MetricStatus, MetricTerm> = {
     description:
       "Derived from an official public catalogue that the provider does not market as a headline number.",
     tone: "info",
-    icon: "Database",
+    glyph: "◇",
   },
   secondary: {
     label: "Reported",
@@ -70,7 +70,7 @@ export const METRIC_STATUS: Record<MetricStatus, MetricTerm> = {
     description:
       "From a reputable third party, used only because no primary source publishes the figure. Weaker evidence than a measurement or an official statement.",
     tone: "neutral",
-    icon: "Newspaper",
+    glyph: "◌",
   },
   not_published: {
     label: "Not publicly listed",
@@ -78,7 +78,7 @@ export const METRIC_STATUS: Record<MetricStatus, MetricTerm> = {
     description:
       "The provider publishes no comparable public figure. This is a gap in what the vendor discloses, not a gap in this dataset.",
     tone: "neutral",
-    icon: "Minus",
+    glyph: "—",
   },
   variable: {
     label: "Variable",
@@ -86,7 +86,7 @@ export const METRIC_STATUS: Record<MetricStatus, MetricTerm> = {
     description:
       "Availability depends on the providers and endpoints the customer configures. This is a property of the product's architecture, not missing data.",
     tone: "info",
-    icon: "SlidersHorizontal",
+    glyph: "≡",
   },
   documented: {
     label: "Documented integrations",
@@ -94,7 +94,7 @@ export const METRIC_STATUS: Record<MetricStatus, MetricTerm> = {
     description:
       "The number of provider or model integrations the software documents. The set actually reachable depends on what the operator configures, so the figure is shown but not ranked against hosted catalogues.",
     tone: "info",
-    icon: "Plug",
+    glyph: "+",
   },
   not_comparable: {
     label: "Not directly comparable",
@@ -102,7 +102,7 @@ export const METRIC_STATUS: Record<MetricStatus, MetricTerm> = {
     description:
       "The provider publishes a figure, but it measures something else — routes, endpoints or provider/model combinations — so it is not comparable with a model catalogue count.",
     tone: "warn",
-    icon: "Info",
+    glyph: "≠",
   },
   conflicting: {
     label: "Multiple figures",
@@ -110,7 +110,7 @@ export const METRIC_STATUS: Record<MetricStatus, MetricTerm> = {
     description:
       "Credible sources currently report different figures. The disagreement is preserved rather than resolved by picking one without sufficient evidence.",
     tone: "warn",
-    icon: "TriangleAlert",
+    glyph: "△",
   },
 };
 

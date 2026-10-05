@@ -51,13 +51,13 @@ export function SectionHeading({
     >
       <div className="max-w-2xl">
         {eyebrow ? (
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-subtle">
-            {eyebrow}
+          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.12em] text-brand-ink">
+            # {eyebrow}
           </p>
         ) : null}
         <h2
           id={id}
-          className="text-balance text-[22px] font-semibold tracking-[-0.02em] text-ink sm:text-[26px]"
+          className="text-balance text-[19px] font-bold tracking-[-0.01em] text-ink sm:text-[22px]"
         >
           {title}
         </h2>

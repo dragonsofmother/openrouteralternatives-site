@@ -29,6 +29,16 @@ convention:
    `Not disclosed`, `Not applicable` — with a tooltip explaining what that means. No
    component substitutes a placeholder number.
 
+## Look
+
+A terminal. One monospace face (JetBrains Mono), square corners, no shadows, hairline
+and dashed rules, a shell prompt for a wordmark, bracketed navigation and command-line
+flags for the filters. Two palettes share that grammar and are switched by the theme
+toggle (class on `<html>`, system preference as the default): paper and ink with a deep
+green accent, and a phosphor display. All tokens live in [`app/globals.css`](app/globals.css);
+the evidence vocabulary prints as glyphs (● measured, ○ official, ◇ catalogue, — not
+published) defined on `METRIC_STATUS` in [`lib/taxonomy.ts`](lib/taxonomy.ts).
+
 ## Stack
 
 Next.js 16 (App Router, React 19) · TypeScript strict · Tailwind CSS v4 ·

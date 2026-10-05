@@ -94,9 +94,8 @@ npm test           # unit tests for the research scripts
 npm run build      # production build; every route is static
 ```
 
-The site is fully static: no database, no backend, no runtime data fetching. The one external
-read is the repository's star count for the header button, fetched once at build time
-(`GITHUB_TOKEN` is optional and only lifts GitHub's rate limit).
+The site is fully static: no database, no backend, no runtime data fetching, and nothing is
+read from the network at build time.
 
 ## Add or correct a gateway
 

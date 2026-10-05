@@ -4,7 +4,6 @@ import "./globals.css";
 
 import { SITE } from "@/data/site";
 import { changelog } from "@/data/changelog";
-import { fetchStarCount } from "@/lib/github";
 import { allGateways } from "@/lib/gateway";
 import { THEME_SCRIPT } from "@/lib/theme";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
@@ -54,11 +53,9 @@ export const viewport: Viewport = {
   ],
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   // The footer shows the date of the newest logged change, dataset or site.
   const lastUpdated = changelog.map((entry) => entry.date).sort().pop() ?? "";
-  // Read once at build time; see lib/github.ts.
-  const stars = await fetchStarCount();
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -75,7 +72,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* One provider at the root so any tooltip works on any page; nested
             providers inside the table are harmless. */}
         <TooltipProvider delayDuration={120}>
-          <Header stars={stars} />
+          <Header />
           <main id="main">{children}</main>
           <Footer updatedAt={lastUpdated} gatewayCount={allGateways().length} />
         </TooltipProvider>

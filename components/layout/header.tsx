@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { NAV_LINKS, REPOSITORY_URL } from "@/data/site";
-import { formatCompactCount } from "@/lib/format";
 import { Container } from "@/components/layout/container";
 import { StarButton } from "@/components/layout/star-button";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
@@ -21,7 +20,7 @@ export function Prompt({ className }: { className?: string }) {
   );
 }
 
-export function Header({ stars }: { stars: number | null }) {
+export function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = React.useState(false);
 
@@ -69,7 +68,7 @@ export function Header({ stars }: { stars: number | null }) {
           </nav>
 
           <div className="ml-auto flex items-center gap-2">
-            <StarButton stars={stars} className="hidden lg:inline-flex" />
+            <StarButton className="hidden lg:inline-flex" />
             <ThemeToggle />
             <button
               type="button"
@@ -113,7 +112,7 @@ export function Header({ stars }: { stars: number | null }) {
                     rel="noopener noreferrer"
                     className="block border border-transparent px-2 py-1 text-[15px] text-ink-muted hover:text-ink"
                   >
-                    [star on github{stars !== null ? ` · ${formatCompactCount(stars)}` : ""}]
+                    [star on github]
                   </a>
                 </li>
               </ul>

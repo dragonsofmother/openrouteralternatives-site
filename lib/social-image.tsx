@@ -19,19 +19,21 @@ export const SOCIAL_IMAGE_ALT =
 const FEATURED = ["eden-ai", "kong-ai-gateway", "litellm", "helicone", "respan", "truefoundry"];
 
 /**
- * A loose cloud rather than a row: hand-placed offsets inside a 1080×290
- * band, with varied tile sizes and slight tilts, so the marks read as a
- * handful picked at random. The first three are the largest. Positions are
- * fixed so the card renders the same on every build; none of the tiles
- * overlap, labels included.
+ * A loose cloud rather than a row: six equal tiles at hand-placed offsets
+ * inside a 1080×290 band, each at a different height and tilted a few
+ * degrees, so the marks read as a handful picked at random with no one of
+ * them favoured. Positions are fixed so the card renders the same on every
+ * build; none of the tiles overlap, labels included.
  */
+const TILE = 124;
+const LABEL = 16;
 const SCATTER = [
-  { box: 164, x: 24, y: 40, tilt: -4, label: 19 },
-  { box: 140, x: 262, y: 2, tilt: 3, label: 18 },
-  { box: 156, x: 452, y: 70, tilt: -2, label: 19 },
-  { box: 98, x: 672, y: 16, tilt: 5, label: 15 },
-  { box: 86, x: 806, y: 136, tilt: -3, label: 14 },
-  { box: 112, x: 936, y: 30, tilt: 2, label: 15 },
+  { x: 30, y: 40, tilt: -4 },
+  { x: 230, y: 0, tilt: 3 },
+  { x: 420, y: 82, tilt: -2 },
+  { x: 620, y: 16, tilt: 5 },
+  { x: 790, y: 118, tilt: -3 },
+  { x: 950, y: 30, tilt: 2 },
 ];
 
 const INK = "#f2f7f3";
@@ -153,13 +155,7 @@ export async function renderSocialImage(): Promise<ImageResponse> {
                 transform: `rotate(${mark.tilt}deg)`,
               }}
             >
-              <Tile
-                name={mark.name}
-                src={mark.src}
-                box={mark.box}
-                label={mark.label}
-                labelColor={mark.box >= 130 ? TEXT : MUTED}
-              />
+              <Tile name={mark.name} src={mark.src} box={TILE} label={LABEL} labelColor={TEXT} />
             </div>
           ))}
         </div>

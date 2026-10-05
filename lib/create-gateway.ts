@@ -17,7 +17,6 @@ type RequiredGatewayFields = Pick<
   | "differentiator"
   | "type"
   | "tier"
-  | "categories"
   | "jurisdictionBucket"
   | "lastVerified"
 >;
@@ -28,8 +27,7 @@ export type GatewayInput = RequiredGatewayFields & Partial<Gateway>;
  * Builds a complete `Gateway` from a partial record.
  *
  * Adding a new gateway therefore means writing down only what is sourced; the
- * comparison table, profile pages and category rankings all read the same
- * canonical object.
+ * comparison table reads the same canonical object for every surface.
  */
 export function createGateway(input: GatewayInput): Gateway {
   return {

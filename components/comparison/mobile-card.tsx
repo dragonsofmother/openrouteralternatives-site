@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import type { Gateway } from "@/types";
 import {
+  CertificationsCell,
   DeploymentCell,
+  EmployeesCell,
   JurisdictionCell,
   ModalityCell,
   ObservabilityCell,
@@ -34,12 +35,7 @@ export function MobileGatewayCard({ gateway }: { gateway: Gateway }) {
       <div className="flex items-start gap-3 p-4">
         <GatewayLogo gateway={gateway} size="md" />
         <div className="min-w-0 flex-1">
-          <Link
-            href={`/gateways/${gateway.slug}`}
-            className="text-[15px] font-semibold tracking-[-0.01em] text-ink"
-          >
-            {gateway.name}
-          </Link>
+          <h3 className="text-[15px] font-semibold tracking-[-0.01em] text-ink">{gateway.name}</h3>
           <p className="mt-0.5 text-[12.5px] leading-snug text-ink-subtle">
             {gateway.differentiator}
           </p>
@@ -62,6 +58,24 @@ export function MobileGatewayCard({ gateway }: { gateway: Gateway }) {
           </dt>
           <dd className="mt-1">
             <ProvidersCell gateway={gateway} />
+          </dd>
+        </div>
+
+        <div className="bg-surface px-4 py-3">
+          <dt className="text-[11px] font-medium uppercase tracking-[0.06em] text-ink-subtle">
+            Employees
+          </dt>
+          <dd className="mt-1">
+            <EmployeesCell gateway={gateway} />
+          </dd>
+        </div>
+
+        <div className="bg-surface px-4 py-3">
+          <dt className="text-[11px] font-medium uppercase tracking-[0.06em] text-ink-subtle">
+            Certifications
+          </dt>
+          <dd className="mt-1.5">
+            <CertificationsCell field={gateway.certifications} />
           </dd>
         </div>
 
@@ -110,7 +124,7 @@ export function MobileGatewayCard({ gateway }: { gateway: Gateway }) {
             Deployment
           </p>
           <div className="mt-1.5">
-            <DeploymentCell field={gateway.deployment} />
+            <DeploymentCell field={gateway.deployment} zdr={gateway.zeroDataRetention} />
           </div>
         </div>
       </div>
@@ -129,13 +143,6 @@ export function MobileGatewayCard({ gateway }: { gateway: Gateway }) {
             className={cn("size-3.5 transition-transform duration-200", open && "rotate-180")}
           />
         </button>
-        <Link
-          href={`/gateways/${gateway.slug}`}
-          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-brand-ink"
-        >
-          Profile
-          <ArrowRight aria-hidden="true" className="size-3.5" />
-        </Link>
       </div>
 
       {open ? (

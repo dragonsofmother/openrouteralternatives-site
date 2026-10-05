@@ -64,7 +64,7 @@ export function organizationJsonLd() {
     name: SITE.name,
     url: SITE.url,
     description:
-      "An independent comparison directory of AI gateways, model routers and multi-provider AI APIs.",
+      "An independent comparison of AI gateways, model routers and multi-provider AI APIs.",
   };
 }
 
@@ -88,7 +88,7 @@ export function itemListJsonLd({
 }: {
   name: string;
   description: string;
-  items: { name: string; path: string }[];
+  items: { name: string; url: string }[];
 }) {
   return {
     "@context": "https://schema.org",
@@ -100,7 +100,7 @@ export function itemListJsonLd({
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      url: canonical(item.path),
+      url: item.url,
     })),
   };
 }

@@ -1,82 +1,83 @@
 # openrouteralternatives.eu
 
-A source-driven comparison directory of OpenRouter alternatives: AI gateways, model
-routers and multi-provider AI APIs, compared by model coverage, provider diversity,
-OpenAI API compatibility, EU jurisdiction, data residency, infrastructure, deployment
-and company characteristics.
+A source-driven comparison table of OpenRouter alternatives: AI gateways, model routers
+and multi-provider AI APIs, compared by model coverage, provider diversity, OpenAI API
+compatibility, EU jurisdiction, data residency, infrastructure, deployment and company
+characteristics.
 
 Production domain: <https://openrouteralternatives.eu>
 Repository: <https://github.com/openrouteralternatives/openrouteralternatives-site>
 
 ## Editorial contract
 
-The site publishes **no overall score** and names no single "best" alternative. Two rules
-follow from that and are enforced in code rather than by convention:
+The site publishes **no overall score**, **no ranking** and names no single "best"
+alternative. Two rules follow from that and are enforced in code rather than by
+convention:
 
-1. **Nothing is ranked without a stated, measurable criterion.** Each category in
-   [`data/categories.ts`](data/categories.ts) carries its own `inclusionCriterion`,
-   `rankingCriterion` and `rankingMetric`. A category whose metric is `none` renders as a
-   list; a ranked category only positions gateways that actually hold a value for the
-   metric. Where no member holds one, the page says so instead of ordering by something
-   else. Score-ranked categories (`rankingMetric: "score"`) declare the recorded
-   attributes they weigh in `signals`, print that declaration on the page, and are
-   computed by [`lib/ranking.ts`](lib/ranking.ts) from [`lib/signals.ts`](lib/signals.ts)
-   — code that never refers to a gateway by name. `npm run audit` fails if a record's
-   declared category list drifts from what the filters compute.
+1. **Nothing is ordered without a stated, measurable criterion.** The table opens in
+   alphabetical order. The gateway name and jurisdiction columns do not sort at all. Every
+   other sortable column declares exactly one direction with `sortDescFirst` in
+   [`components/comparison/columns.tsx`](components/comparison/columns.tsx) — largest or
+   deepest first for measured quantities, the taxonomy order for labelled ones — and the
+   table never reverses it, so a sort can never be flipped to promote rows that hold no
+   value. Model count is always the second order: applying any filter orders the matching
+   rows by it, largest first, and it breaks ties under every column sort. Rows without a
+   value stay at the bottom whatever the column.
 2. **Uncertainty is displayed, never smoothed over.** Every value is a
    `Field<T>` ([`types/field.ts`](types/field.ts)) carrying a `DataStatus`. A field with
    no supported value has `value: null` and renders its status — `Not recorded`,
    `Not disclosed`, `Not applicable` — with a tooltip explaining what that means. No
    component substitutes a placeholder number.
 
-Default table sort is alphabetical by gateway name. Sorting keeps rows without a value at
-the bottom in **both** directions, so missing data can never be promoted by reversing the
-sort.
-
 ## Stack
 
 Next.js 16 (App Router, React 19) · TypeScript strict · Tailwind CSS v4 ·
 TanStack Table v9 · Radix primitives · Lucide icons. Fully static: no database, no
-backend API, no runtime data fetching.
+backend API, no runtime data fetching. The one external read is the repository's star
+count for the header button, fetched once at build time; `GITHUB_TOKEN` is optional and
+only lifts the API rate limit.
 
 ## Site structure
 
-The homepage is the product. It carries, in order: hero and dataset composition, a short
-statement of why the project exists (linking to `/why`), the comparison table with its legend, the methodology that explains how to read the table
-(definitions always visible, longer explanations in disclosure blocks), category
-discovery cards with the two measurable rankings, the EU-company-versus-EU-hosted
-explainer, use-case cards, a featured cross-section, how to contribute, and the blog
-teaser.
+Two routes.
 
-Primary navigation has three entries: **Compare** (the homepage), **Gateways** and
-**Blog**. Categories are reached through the homepage cards and the footer.
+The **homepage** carries, in order: a short introduction with the catalogue snapshot
+date and a link to `/why`, the comparison table with its filters and data-status legend,
+the methodology that explains how to read the table (definitions always visible, longer
+explanations in disclosure blocks), and how to contribute.
+
+The table shows ten columns by default — gateway, jurisdiction, EU residency, models,
+certifications, employees, providers / routes, OpenAI compatibility, modalities, and
+deployment with zero data retention — sized in proportion to one another so they fill a
+laptop screen without horizontal scrolling. Funding, observability, ownership, pricing,
+gateway location and social reach are recorded and shown in every expanded row.
+
+**`/why`** sets out why the project exists: why a gateway at all, why choosing one is a
+jurisdiction decision rather than a hosting decision, the US legal authorities involved
+with links to the primary texts, and how that reasoning became table columns.
+
+Routes from earlier revisions (`/compare`, `/gateways`, `/categories`, `/blog` and their
+children) redirect permanently to the homepage in [`next.config.ts`](next.config.ts).
 
 ## Layout
 
 ```
 app/                    routes; every page is statically generated
-  page.tsx              the one-page comparison experience
-  compare/              full-width variant of the comparison table
+  page.tsx              introduction, comparison table, methodology, contribute
   why/                  why the project exists: gateways, jurisdiction and the US legal authorities involved
-  gateways/[slug]/      profile pages, generated from the dataset
-  categories/<slug>/    eight category routes over one shared template
-  blog/ blog/[slug]/    blog index (empty state until the first article) and articles
   sitemap.ts robots.ts not-found.tsx error.tsx loading.tsx
 components/
-  comparison/           table, columns, filters, expanded row, mobile cards
-  gateways/             profile, cards, logo
-  categories/           category template, grid, ranking block
-  home/                 hero, trust strip, why intro, methodology, EU explainer, contribute, blog teaser
-  layout/ ui/           header, footer, search, primitives
+  comparison/           table, columns, filters, expanded row, mobile cards, data legend
+  gateways/             logo
+  home/                 hero, methodology, contribute
+  layout/ ui/           header, footer, page header, primitives
 data/                   the only place facts live
   gateways.ts           canonical dataset
-  categories.ts         category definitions and their criteria
   sources.ts            source hierarchy shown in the methodology section
-  blog.ts               published articles (empty until the first one)
   why.ts                copy for the homepage intro and the /why page, including the cited legal texts
-  changelog.ts          dated record of dataset changes (data history, not a public page)
-  self-hosted.ts site.ts
-lib/                    ranking, signals, filtering, formatting, SEO, table config
+  changelog.ts          dated record of dataset and site changes (history, not a public page)
+  site.ts               site constants, navigation and footer links
+lib/                    filtering, formatting, metrics, SEO, table config, taxonomy
 types/                  shared types
 scripts/
   audit-dataset.ts      dataset integrity audit (npm run audit)
@@ -90,8 +91,8 @@ content/                editorial notes that are not rendered data
 ```
 
 `data/` holds facts, `lib/` holds logic, `components/` holds presentation. No gateway
-information is hard-coded in JSX, and the comparison table, profile pages and category
-pages all read the same canonical records.
+information is hard-coded in JSX; the table, its expanded rows and the mobile cards all
+read the same canonical records.
 
 ## Working with the dataset
 
@@ -100,8 +101,8 @@ pages all read the same canonical records.
 Append a `createGateway({ ... })` entry to [`data/gateways.ts`](data/gateways.ts). Only
 the fields you can source need to be written; [`lib/create-gateway.ts`](lib/create-gateway.ts)
 fills the rest with `needs-verification`, so an unfilled field can never be mistaken for a
-researched one. The profile page, sitemap entry, search index and category membership all
-follow automatically.
+researched one. The table row, its expanded detail and the mobile card follow
+automatically.
 
 ### Recording a new model measurement
 
@@ -115,9 +116,8 @@ models: metric(
 ),
 ```
 
-The table, the homepage ranking and the category pages all read the newest entry; the
-profile page shows the history. Add a matching entry to
-[`data/changelog.ts`](data/changelog.ts) so the superseded figure stays on record.
+The table reads the newest entry and keeps the earlier ones on the record. Add a matching
+entry to [`data/changelog.ts`](data/changelog.ts) so the superseded figure stays on record.
 
 ### OpenAI compatibility
 
@@ -132,10 +132,10 @@ documented `"unknown"`.
 
 `routes` (model × provider combinations) and `endpoints` (individually addressable API
 entries, using the vendor's own definition) are two `Metric` fields like `models` and
-`providers`. They share one table column, "Routes / endpoints": `routesOrEndpoints()` in
-[`lib/gateway.ts`](lib/gateway.ts) shows whichever carries a figure, labelled, and the
-expanded row and profile show the second one where a vendor publishes both. Neither is
-ever computed from the other or from modalities.
+`providers`. They sit beneath the provider count in the "Providers / routes" column:
+`routesOrEndpoints()` in [`lib/gateway.ts`](lib/gateway.ts) picks whichever carries a
+figure, labelled, and the expanded row shows the second one where a vendor publishes both.
+Neither is ever computed from the other or from modalities.
 
 ### Funding and observability
 
@@ -144,39 +144,27 @@ named in them and, where the company states one, the total raised. It describes 
 operating company, so Kong's rounds are Kong Inc.'s and a hyperscaler product records
 `not-applicable`. Funding that could not be publicly verified is `not-published`
 ("Not publicly listed"), never zero; a disputed round count keeps the `conflicting` status
-with both figures in the note. Investors render as chips in the profile's Company section
-and as a line in the expanded table row; there is no investors column.
+with both figures in the note. Investors render as a line in the expanded table row; there
+is no funding column.
 
 `observability` is a `Field<"none" | "basic" | "limited" | "detailed" | "advanced">`, read
 from vendor documentation against the five-level scale defined in the methodology section
-and in `OBSERVABILITY` in [`lib/taxonomy.ts`](lib/taxonomy.ts). It has its own table
-column, sorted on the scale, and is never used to rank anything.
+and in `OBSERVABILITY` in [`lib/taxonomy.ts`](lib/taxonomy.ts). It is shown in the
+expanded row and the mobile card, and it is never used to rank anything.
 
 ### Applying a research pass
 
 The September 17, 2026 verified research is the current source of truth for vendor
 figures and company attributes. Where it publishes a figure, that figure is the metric's
-`current` observation; this project's own endpoint measurements stay in `history` and
-still drive the measured rankings. Where it publishes none, the measurement remains
-current, and rankings prefer a measured count over a vendor figure of any date. Counts copied
-from vendor pages are shown as floors rounded down to the nearest ten (72 → "70+", exact value
-kept for sorting); integration counts of customer-configured gateways carry the `documented`
-status and are shown but never ranked against hosted catalogues. Sorting is semantic throughout: jurisdiction groups by EU / UK / US / other before
-country name, model and route counts sort on their numeric value (a floor such as 700+ on
-700), employees on the band's lower bound, and ZDR, ownership and pricing on the orders
-declared in [`lib/taxonomy.ts`](lib/taxonomy.ts).
-
-### Adding a category
-
-Add a definition to `data/categories.ts` and a four-line route under
-`app/categories/<slug>/page.tsx` following the existing pattern. The page body, ranking,
-table, cards and JSON-LD come from the shared template.
-
-### Adding a blog article
-
-Append a `BlogPost` to [`data/blog.ts`](data/blog.ts). The index, the article route, the
-sitemap and the homepage teaser all read that list; until it has an entry, `/blog` shows
-an intentional empty state and no placeholder cards.
+`current` observation; this project's own endpoint measurements stay in `history`. Where
+it publishes none, the measurement remains current. Counts copied from vendor pages are
+shown as floors rounded down to the nearest ten (72 → "70+", exact value kept for
+sorting); integration counts of customer-configured gateways carry the `documented`
+status and are shown and labelled. Sorting is semantic and single-direction throughout:
+model and route counts sort on their numeric value (a floor such as 700+ on 700),
+employees on the band's lower bound, deployment on the number of documented options, and
+residency, OpenAI compatibility, ownership and pricing on the orders declared in
+[`lib/taxonomy.ts`](lib/taxonomy.ts).
 
 ## Refreshing data with Firecrawl
 
@@ -198,12 +186,12 @@ npm run measure:models      # enumerate public model endpoints with the counting
 
 ## Keeping bias out
 
-Every vendor is evaluated with the same published methodology, and the
-protections are structural rather than promised: the ranking criterion for
-every category is printed on that category's own page, the default table order
-is alphabetical, measured and provider-stated counts are never mixed inside a
-ranking, and no gateway is excluded from a list it qualifies for.
-`npm run audit` enforces the structural parts.
+Every vendor is evaluated with the same published methodology, and the protections are
+structural rather than promised: nothing on the site is ranked, the default table order
+is alphabetical, every sort runs in one declared direction with unrecorded values at the
+bottom, measured and provider-stated counts are always labelled apart, and no gateway is
+excluded from a filter it qualifies for. `npm run audit` enforces the structural parts of
+the dataset.
 
 ## Data status in the current revision
 
@@ -239,12 +227,11 @@ is, and a value with no number still carries its reason:
   Portkey's published 1,600+ counts endpoints, so it is recorded as
   `endpoints` and its model count reads "Different metric". Requesty's 684 are
   endpoints; its 545 deduplicated models are counted separately.
-- **Rankings only compare like with like.** `RANKING_RULES` in
-  [lib/ranking.ts](lib/ranking.ts) declares which statuses and which scope each
-  ranking may consume. Provider-stated figures are ranked in a separate list on
-  the same page, never merged.
+- **Measured and provider-stated figures are labelled apart.** A vendor's own
+  number is never shown as a measurement, and a measurement is never replaced
+  by a vendor's number.
 - **History is never overwritten.** Superseded measurements and a provider's
-  own figure both stay in `history` and are listed on the profile.
+  own figure both stay in `history` on the record.
 
 Unresolved fields are classified rather than lumped together. Run
 `npm run audit` for the split and [content/data-todo.md](content/data-todo.md)
@@ -279,9 +266,9 @@ npm run measure:models     # enumerate public model endpoints into research/meas
 ## Accessibility and performance notes
 
 Pages are server components; client JavaScript is limited to the table interactions,
-search dialog, mobile navigation and theme toggle. Status is never conveyed by colour
-alone — every badge carries text, and every icon-only control has an accessible label.
-The comparison table uses `aria-sort` on sortable headers, `aria-expanded` on row
-toggles, a sticky header and sticky first column, and becomes one card per gateway below
-the `md` breakpoint rather than a fifteen-column table. Methodology and EU-explainer
-details use native disclosure elements, so they need no JavaScript.
+mobile navigation and theme toggle. Status is never conveyed by colour alone — every badge
+carries text, and every icon-only control has an accessible label. The comparison table
+uses `aria-sort` on sortable headers, `aria-expanded` on row toggles, a sticky header and
+sticky first column, and becomes one card per gateway below the `lg` breakpoint rather
+than a squeezed table. Methodology details use native disclosure elements, so they need no
+JavaScript.

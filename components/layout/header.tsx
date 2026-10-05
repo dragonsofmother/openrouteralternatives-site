@@ -3,16 +3,16 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
-import type { SearchIndexEntry } from "@/lib/search";
-import { NAV_LINKS } from "@/data/site";
+import { ArrowUpRight, Menu, X } from "lucide-react";
+import { NAV_LINKS, REPOSITORY_URL } from "@/data/site";
+import { formatCompactCount } from "@/lib/format";
 import { Container } from "@/components/layout/container";
-import { SiteSearch } from "@/components/layout/site-search";
+import { StarButton } from "@/components/layout/star-button";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Wordmark } from "@/components/layout/wordmark";
 import { cn } from "@/lib/utils";
 
-export function Header({ searchIndex }: { searchIndex: SearchIndexEntry[] }) {
+export function Header({ stars }: { stars: number | null }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = React.useState(false);
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -32,8 +32,8 @@ export function Header({ searchIndex }: { searchIndex: SearchIndexEntry[] }) {
     setMenuOpen(false);
   }
 
-  const isActive = (href: string) =>
-    pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
+  // Hash links point at sections of the homepage and are never "current".
+  const isActive = (href: string) => !href.includes("#") && pathname === href;
 
   return (
     <header
@@ -76,7 +76,7 @@ export function Header({ searchIndex }: { searchIndex: SearchIndexEntry[] }) {
           </nav>
 
           <div className="ml-auto flex items-center gap-2">
-            <SiteSearch index={searchIndex} />
+            <StarButton stars={stars} className="hidden lg:inline-flex" />
             <ThemeToggle />
             <button
               type="button"
@@ -106,6 +106,7 @@ export function Header({ searchIndex }: { searchIndex: SearchIndexEntry[] }) {
                     <Link
                       href={link.href}
                       aria-current={isActive(link.href) ? "page" : undefined}
+                      onClick={() => setMenuOpen(false)}
                       className={cn(
                         "block rounded-lg px-3 py-2.5 text-[15px] transition-colors",
                         isActive(link.href)
@@ -117,6 +118,20 @@ export function Header({ searchIndex }: { searchIndex: SearchIndexEntry[] }) {
                     </Link>
                   </li>
                 ))}
+                <li>
+                  <a
+                    href={REPOSITORY_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 rounded-lg px-3 py-2.5 text-[15px] text-ink-muted transition-colors hover:bg-subtle hover:text-ink"
+                  >
+                    Star on GitHub
+                    {stars !== null ? (
+                      <span className="tnum text-ink-subtle">· {formatCompactCount(stars)}</span>
+                    ) : null}
+                    <ArrowUpRight aria-hidden="true" className="size-3.5" />
+                  </a>
+                </li>
               </ul>
             </nav>
           </Container>

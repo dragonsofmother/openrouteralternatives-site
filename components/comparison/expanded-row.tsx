@@ -1,10 +1,21 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import type { Capability, Field, Funding, Gateway } from "@/types";
-import { CAPABILITY, OWNERSHIP_STATUS, PRICING_TRANSPARENCY, PRODUCT_STATUS } from "@/lib/taxonomy";
-import { formatDate, formatFollowers, formatFunding, formatQualifiedCount } from "@/lib/format";
+import type { Capability, Field, Funding, Gateway, Metric } from "@/types";
+import {
+  CAPABILITY,
+  METRIC_STATUS,
+  OWNERSHIP_STATUS,
+  PRICING_TRANSPARENCY,
+  PRODUCT_STATUS,
+} from "@/lib/taxonomy";
+import { allObservations, metricDisplay } from "@/lib/metric";
+import {
+  formatDate,
+  formatDateShort,
+  formatFollowers,
+  formatFunding,
+  formatQualifiedCount,
+} from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { NoValue, ProvenanceMark } from "@/components/ui/data-status";
 import { SourceChips } from "@/components/ui/source-chips";
@@ -159,6 +170,35 @@ function ListValue({ field }: { field: Field<string[]> }) {
   );
 }
 
+/** Every observation of a metric that carries a figure, newest first. */
+function figuresOnRecord(metric: Metric) {
+  return allObservations(metric).filter((observation) => metricDisplay(observation));
+}
+
+/**
+ * The full list of figures ever recorded for a metric, each with its evidence
+ * kind, scope and date. This is where a superseded measurement stays visible
+ * next to the one that replaced it.
+ */
+function MetricHistory({ metric }: { metric: Metric }) {
+  return (
+    <ul className="flex flex-wrap gap-x-4 gap-y-1">
+      {figuresOnRecord(metric).map((observation, index) => (
+        <li key={`${observation.status}-${observation.date ?? index}`} className="text-[13px]">
+          <span className="tnum font-medium text-ink">{metricDisplay(observation)}</span>{" "}
+          <span className="text-ink-muted">
+            {METRIC_STATUS[observation.status].short}
+            {observation.scope
+              ? ` · ${observation.scope === "llm" ? "LLM scope" : "all modalities"}`
+              : ""}
+            {observation.date ? ` · ${formatDateShort(observation.date)}` : ""}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function Bullets({ title, items }: { title: string; items: string[] }) {
   return (
     <div>
@@ -219,6 +259,11 @@ export function ExpandedRow({ gateway }: { gateway: Gateway }) {
             <Definition label="Routes / endpoints">
               <CoverageDetail gateway={gateway} />
             </Definition>
+            {figuresOnRecord(gateway.models).length > 1 ? (
+              <Definition label="Model count history">
+                <MetricHistory metric={gateway.models} />
+              </Definition>
+            ) : null}
             <Definition label="OpenAI compatible">
               <span className="inline-flex flex-wrap items-center gap-2">
                 <OpenAiCompatibilityCell field={gateway.openaiCompatible} size="sm" />
@@ -228,6 +273,9 @@ export function ExpandedRow({ gateway }: { gateway: Gateway }) {
                   </span>
                 ) : null}
               </span>
+            </Definition>
+            <Definition label="Gateway location">
+              <ListValue field={gateway.gatewayLocations} />
             </Definition>
             <Definition label="Inference regions">
               <ListValue field={gateway.inferenceLocations} />
@@ -287,21 +335,12 @@ export function ExpandedRow({ gateway }: { gateway: Gateway }) {
         <Bullets title="Best for" items={gateway.bestFor} />
       </div>
 
-      <div className="mt-8 flex flex-col gap-4 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <span className="text-[12px] uppercase tracking-[0.06em] text-ink-subtle">Sources</span>
-          <SourceChips sources={gateway.sources} showDates />
-          <span className="text-[12px] text-ink-subtle">
-            Last verified {formatDate(gateway.lastVerified)}
-          </span>
-        </div>
-        <Link
-          href={`/gateways/${gateway.slug}`}
-          className="inline-flex shrink-0 items-center gap-1.5 text-[13.5px] font-medium text-brand-ink hover:underline"
-        >
-          View full profile
-          <ArrowRight aria-hidden="true" className="size-3.5" />
-        </Link>
+      <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line pt-5">
+        <span className="text-[12px] uppercase tracking-[0.06em] text-ink-subtle">Sources</span>
+        <SourceChips sources={gateway.sources} showDates />
+        <span className="text-[12px] text-ink-subtle">
+          Last verified {formatDate(gateway.lastVerified)}
+        </span>
       </div>
     </div>
   );

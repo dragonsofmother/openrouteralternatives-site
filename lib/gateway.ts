@@ -66,7 +66,7 @@ export function displayModelObservation(gateway: Gateway): MetricValue {
  * Follows what the cell displays: the current observation when it carries a
  * comparable number, otherwise the newest measurement, otherwise any other
  * quantified figure on record. Rows with no number return undefined so the
- * table pins them to the bottom in both sort directions.
+ * table pins them to the bottom.
  */
 export function sortableModelCount(gateway: Gateway): number | undefined {
   const current = gateway.models.current;
@@ -123,13 +123,6 @@ export function secondaryCoverage(gateway: Gateway): CoverageMetric | null {
       ? { metric: gateway.endpoints, kind: "endpoints" }
       : { metric: gateway.routes, kind: "routes" };
   return metricDisplay(other.metric.current) ? other : null;
-}
-
-/** Sort key for the combined routes / endpoints column. */
-export function sortableCoverage(gateway: Gateway): number | undefined {
-  const { metric } = routesOrEndpoints(gateway);
-  if (isQuantified(metric.current)) return metric.current.value;
-  return comparableValue(metric, [...QUANTIFIED_STATUSES])?.value ?? undefined;
 }
 
 /** The newest date on which any model count was measured across the dataset. */
@@ -253,7 +246,6 @@ export function activeFilterCount(filters: GatewayFilters): number {
 export interface DatasetStats {
   gatewaysTracked: number;
   measuredCatalogues: number;
-  categoriesCovered: number;
   euIncorporated: number;
   openSource: number;
   snapshotDate: string | null;
@@ -262,7 +254,7 @@ export interface DatasetStats {
   byType: { type: GatewayType; count: number }[];
 }
 
-export function datasetStats(categoryCount: number): DatasetStats {
+export function datasetStats(): DatasetStats {
   const measured = gateways.filter((gateway) => latestMeasured(gateway.models));
   const counts = measured
     .map((gateway) => measuredModelCount(gateway))
@@ -271,7 +263,6 @@ export function datasetStats(categoryCount: number): DatasetStats {
   return {
     gatewaysTracked: gateways.length,
     measuredCatalogues: measured.length,
-    categoriesCovered: categoryCount,
     euIncorporated: gateways.filter((g) => g.euJurisdiction.value === true).length,
     openSource: gateways.filter((g) => g.openSource.value === "yes").length,
     snapshotDate: currentSnapshotDate(),
@@ -307,6 +298,3 @@ export function openFieldCount(): number {
     0,
   );
 }
-
-/** Re-exported so ranking code has a single import site for dataset reads. */
-export { comparableValue };

@@ -151,8 +151,6 @@ export interface Gateway {
 
   type: GatewayType;
   tier: GatewayTier;
-  /** Category slugs this gateway is eligible for. */
-  categories: string[];
 
   // --- Company -------------------------------------------------------------
   legalEntity: Field<string>;
@@ -230,13 +228,3 @@ export interface Gateway {
   lastVerified: string;
 }
 
-/** Extra columns for the self-hosted / open-source comparison. */
-export interface SelfHostedDetail {
-  gatewayId: string;
-  runtime: Field<string>;
-  observability: Field<string>;
-  routing: Field<string>;
-  enterpriseOptions: Field<string>;
-  githubStars: Field<number>;
-  maintainer: Field<string>;
-}

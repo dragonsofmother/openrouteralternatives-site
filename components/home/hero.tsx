@@ -1,81 +1,43 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import type { DatasetStats } from "@/lib/gateway";
-import type { SearchIndexEntry } from "@/lib/search";
-import { formatDate, formatCount } from "@/lib/format";
+import { SITE } from "@/data/site";
+import { WHY } from "@/data/why";
+import { formatDate } from "@/lib/format";
 import { Container } from "@/components/layout/container";
-import { SiteSearch } from "@/components/layout/site-search";
-import { DatasetPanel } from "@/components/home/dataset-panel";
 
-function Stat({ value, label }: { value: string; label: string }) {
+/**
+ * Compact introduction above the table: name and tagline on one line, then
+ * one sentence on why the site exists with a link to the full reasoning and
+ * the date of the current catalogue snapshot. Kept short so the table starts
+ * within the first screen.
+ */
+export function Hero({ snapshotDate }: { snapshotDate: string | null }) {
   return (
-    <div className="flex flex-col gap-0.5">
-      <span className="tnum text-[22px] font-semibold leading-none tracking-[-0.02em] text-ink">
-        {value}
-      </span>
-      <span className="text-[12.5px] text-ink-muted">{label}</span>
-    </div>
-  );
-}
-
-export function Hero({
-  stats,
-  searchIndex,
-}: {
-  stats: DatasetStats;
-  searchIndex: SearchIndexEntry[];
-}) {
-  return (
-    <section className="relative isolate overflow-hidden border-b border-line">
-      <div aria-hidden="true" className="grid-veil absolute inset-0 -z-10 opacity-60" />
-      <Container>
-        <div className="grid gap-10 py-14 sm:py-16 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-14 lg:py-20">
-          <div>
-            <div className="max-w-3xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-[12px] text-ink-muted shadow-card">
-              <span className="size-1.5 rounded-full bg-ok" aria-hidden="true" />
-              {stats.snapshotDate
-                ? `Model catalogue snapshot ${formatDate(stats.snapshotDate)}`
-                : "Dataset in progress"}
-            </p>
-
-            <h1 className="mt-5 text-balance text-[38px] font-semibold leading-[1.05] tracking-[-0.035em] text-ink sm:text-[52px] lg:text-[60px]">
-              OpenRouter Alternatives
+    <section className="border-b border-line bg-subtle/60">
+      <Container width="wide">
+        <div className="flex flex-col gap-1.5 py-5 sm:py-6">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h1 className="text-[24px] font-semibold leading-tight tracking-[-0.03em] text-ink sm:text-[28px]">
+              {SITE.name}
             </h1>
-
-            <p className="mt-4 text-pretty text-[18px] leading-snug text-ink sm:text-[21px]">
-              Compare AI gateways, model routers and multi-provider AI APIs.
-            </p>
-
-            <p className="mt-3 max-w-2xl text-pretty text-[15px] leading-relaxed text-ink-muted">
-              OpenRouter is one way to access multiple AI models through a unified API. This
-              index compares the broader AI gateway landscape — from EU-native routers and
-              enterprise control planes to self-hosted open-source gateways.
-            </p>
-            </div>
-
-            <div className="mt-8 max-w-2xl">
-              <SiteSearch index={searchIndex} variant="input" />
-            </div>
-
-            <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-6">
-            <Stat value={formatCount(stats.gatewaysTracked)} label="Gateways tracked" />
-            <Stat
-              value={formatCount(stats.measuredCatalogues)}
-              label="Directly measured catalogues"
-            />
-            <Stat value={formatCount(stats.categoriesCovered)} label="Comparison categories" />
-              <Link
-                href="/compare"
-                className="inline-flex items-center gap-1.5 text-[13.5px] font-medium text-brand-ink hover:underline"
-              >
-                Open the full comparison
-                <ArrowRight aria-hidden="true" className="size-3.5" />
-              </Link>
-            </div>
+            <p className="text-[15px] text-ink-muted">{SITE.tagline}</p>
           </div>
-
-          <DatasetPanel stats={stats} />
+          <p className="text-[13.5px] leading-relaxed text-ink-muted">
+            {WHY.headline}{" "}
+            <Link
+              href="/why"
+              className="inline-flex items-center gap-1 font-medium text-brand-ink hover:underline"
+            >
+              Read why we built it
+              <ArrowRight aria-hidden="true" className="size-3.5" />
+            </Link>
+            {snapshotDate ? (
+              <span className="text-ink-subtle">
+                {" "}
+                · Model catalogue snapshot {formatDate(snapshotDate)}
+              </span>
+            ) : null}
+          </p>
         </div>
       </Container>
     </section>

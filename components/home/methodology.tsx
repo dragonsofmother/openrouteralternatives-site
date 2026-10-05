@@ -1,8 +1,7 @@
 import { Check, ChevronDown, X } from "lucide-react";
 import { SOURCE_HIERARCHY } from "@/data/sources";
-import { BASELINE_DATE, DATASET_DATE, OPEN_DATASET_FIELDS } from "@/data/gateways";
+import { BASELINE_DATE, OPEN_DATASET_FIELDS } from "@/data/gateways";
 import { REPOSITORY_URL } from "@/data/site";
-import { categories } from "@/data/categories";
 import { datasetStats, openFieldCount } from "@/lib/gateway";
 import {
   DATA_STATUS,
@@ -52,7 +51,7 @@ const DEFINITIONS: { id: string; term: string; definition: string }[] = [
     id: "def-snapshot",
     term: "Snapshot date",
     definition:
-      "Every measured figure carries the day it was counted. Catalogues move, so a count is an observation, not an attribute, and superseded observations stay on the profile.",
+      "Every measured figure carries the day it was counted. Catalogues move, so a count is an observation, not an attribute, and superseded observations stay listed in the expanded row and in the changelog.",
   },
   {
     id: "def-openai",
@@ -65,6 +64,12 @@ const DEFINITIONS: { id: string; term: string; definition: string }[] = [
     term: "Jurisdiction vs residency",
     definition:
       "Jurisdiction is where the operating company is incorporated. EU residency is where requests are processed. Gateway location and inference location are recorded separately again. None is inferred from another.",
+  },
+  {
+    id: "def-zdr",
+    term: "Zero data retention (ZDR)",
+    definition:
+      "Whether the vendor documents that prompt and response content is not stored once the response has been returned. Read from documentation as yes, configurable, enterprise-only or no, and shown beside deployment because both describe where content can go.",
   },
   {
     id: "def-unknown",
@@ -146,7 +151,7 @@ function TermList({
  * the former standalone page said.
  */
 export function Methodology() {
-  const stats = datasetStats(categories.length);
+  const stats = datasetStats();
   const openFields = openFieldCount();
 
   return (
@@ -160,12 +165,12 @@ export function Methodology() {
           id="methodology-heading"
           eyebrow="Methodology"
           title="How to read the table"
-          description="No overall score is published and no company is called the best OpenRouter alternative. Where a category is ranked, its page states the recorded attributes and weights that order it. Each column is established the same way for every entry, and where a value cannot be established the cell says so."
+          description="No overall score is published and no company is called the best OpenRouter alternative. With no filter or sort applied, rows are listed alphabetically by name. A filtered view is ordered by model count, largest first; each sortable column sorts in one declared direction with model count as the tiebreak; and rows without a value always stay at the bottom. Each column is established the same way for every entry, and where a value cannot be established the cell says so."
         />
 
-        <dl className="mt-8 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+        <dl className="mt-8 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
           {DEFINITIONS.map((entry) => (
-            <div key={entry.id} id={entry.id} className="bg-surface p-5">
+            <div key={entry.id} id={entry.id} className="scroll-mt-20 bg-surface p-5">
               <dt className="text-[13.5px] font-semibold text-ink">{entry.term}</dt>
               <dd className="mt-1.5 text-[13px] leading-relaxed text-ink-muted">
                 {entry.definition}
@@ -183,9 +188,10 @@ export function Methodology() {
             <p>
               Where a public model endpoint can be enumerated, the count is measured directly and
               displayed with the date it was taken. Where only a vendor-stated number exists, it is
-              labelled as such and excluded from any ranking built on measured counts. The current
+              labelled as such so the two are never confused. The current
               measured baseline was taken on {formatDate(BASELINE_DATE)} and re-counted on{" "}
-              {formatDate(DATASET_DATE)} across {stats.measuredCatalogues} gateways.
+              {formatDate(stats.snapshotDate ?? BASELINE_DATE)} across {stats.measuredCatalogues}{" "}
+              gateways.
             </p>
             <p>A count excludes:</p>
             <ul className="flex flex-col gap-1.5 pl-4">
@@ -208,11 +214,12 @@ export function Methodology() {
               A vendor floor such as &ldquo;500+&rdquo; is stored as a floor and rendered with the
               plus sign. Where a floor and a measured count both exist, both are shown rather than
               the larger one being chosen. Where a gateway routes only to providers the customer
-              configures, no count is published for it at all.
+              configures, no catalogue count is published for it; where the software documents how
+              many integrations it ships, that number is shown and labelled as integrations.
             </p>
             <Rule>
-              Measured and vendor-stated figures are never mixed in one ranking, and a route or
-              endpoint count is never presented as a model count.
+              Measured and vendor-stated figures are never presented as the same kind of evidence,
+              and a route or endpoint count is never presented as a model count.
             </Rule>
           </Details>
 
@@ -222,15 +229,11 @@ export function Methodology() {
             summary="Figures are dated observations. Refreshes add an observation; they never overwrite one."
           >
             <p>
-              Model catalogues are re-measured on a fixed cadence and each refresh is published as a
-              new dated observation. Company and social data are refreshed together so a snapshot
-              stays internally consistent. Every profile lists every figure on record, including the
-              vendor&rsquo;s own number alongside a measurement, so the gap between the two stays
-              visible.
-            </p>
-            <p>
-              A ranking assembled from figures counted on different days is weaker evidence than a
-              single snapshot, and the category pages say which of the two they are.
+              Model catalogues are re-measured periodically and each refresh is published as a new
+              dated observation. Company and social data are refreshed together so a snapshot
+              stays internally consistent. Every record keeps every figure on record and the expanded
+              row lists them all, including the vendor&rsquo;s own number alongside a measurement, so
+              the gap between the two stays visible.
             </p>
           </Details>
 
@@ -240,8 +243,8 @@ export function Methodology() {
             summary="What the small line under each number means."
           >
             <p>
-              Every quantitative value carries one of these. The same vocabulary is used in the
-              table, on profiles and in rankings:
+              Every quantitative value carries one of these. The same vocabulary is used
+              throughout the table:
             </p>
             <TermList
               entries={METRIC_STATUS_ORDER.map((key) => ({
@@ -413,7 +416,7 @@ export function Methodology() {
             <p>
               LinkedIn and X follower figures are point-in-time snapshots, captured on the same day
               so the pair stays comparable, and displayed rounded by scale. They live in a Traction
-              block on profiles and expanded rows, outside the default columns.
+              block in each expanded row, not in the table.
             </p>
             <Rule>
               Follower count is not a measure of product quality and is never used to order any
@@ -458,14 +461,14 @@ export function Methodology() {
             </p>
             <Rule>
               Historical figures are never silently overwritten. A superseded measurement stays
-              visible next to the one that replaced it.
+              listed in the expanded row next to the one that replaced it, and the change is logged.
             </Rule>
             <p>
-              The protections against bias are structural rather than promised: the ranking
-              criterion for every category is printed on that category&rsquo;s page, the default
-              table order is alphabetical, measured and provider-stated figures are never mixed
-              inside one ranking, and no gateway is excluded from a list it qualifies for. Where the
-              evidence favours one product, that product leads.
+              The protections against bias are structural rather than promised: no composite score
+              exists and every order on the site is a single stated column, the unfiltered table is
+              alphabetical, every sortable column sorts in one declared direction with unrecorded
+              values at the bottom, measured and provider-stated figures are always labelled apart,
+              and no gateway is excluded from a filter it qualifies for.
             </p>
           </Details>
         </div>

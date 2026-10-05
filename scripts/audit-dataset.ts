@@ -10,8 +10,6 @@
  *  - routes recorded as models, or a model count that is actually an endpoint
  *    count
  *  - a certification claimed for a vendor that states it holds none
- *  - a category whose filter matches nothing
- *  - a ranked category whose members have no value for its metric
  *  - a logo path that points at a file which does not exist in /public
  *  - an OpenAI-compatibility value recorded without a status that supports it
  *  - an observability level recorded without a status that supports it, or a
@@ -25,8 +23,6 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { gateways } from "@/data/gateways";
-import { categories } from "@/data/categories";
-import { resolveCategory } from "@/lib/ranking";
 import { allObservations, latestMeasured } from "@/lib/metric";
 import { QUANTIFIED_STATUSES } from "@/types/metric";
 import type { Field, Gateway } from "@/types";
@@ -78,11 +74,6 @@ for (const gateway of gateways) {
     if (!residency.sources?.length && residency.status !== "verified") {
       warnings.push(`${gateway.name}: EU residency "${residency.value}" has no source reference`);
     }
-  }
-
-  // A gateway with no EU jurisdiction evidence must not be in the EU category.
-  if (gateway.categories.includes("eu-gateways") && gateway.euJurisdiction.value !== true) {
-    errors.push(`${gateway.name} is tagged eu-gateways but euJurisdiction is not true`);
   }
 
   // A model count must never silently be a route or endpoint count.
@@ -245,38 +236,6 @@ for (const gateway of gateways) {
     if (!funding.sources?.length) {
       warnings.push(`${gateway.name}: funding recorded without a source reference`);
     }
-  }
-}
-
-// --- Categories ------------------------------------------------------------
-// The `categories` list on a record is documentation; membership itself is
-// evaluated from the category filters. The two must agree, or a profile would
-// name a category the data does not support (or omit one it does).
-for (const gateway of gateways) {
-  const computed = categories.filter((category) => category.filter(gateway)).map((c) => c.slug);
-  const declared = [...gateway.categories].sort();
-  if (declared.join(",") !== [...computed].sort().join(",")) {
-    errors.push(
-      `${gateway.name}: declared categories [${declared.join(", ")}] differ from filter membership [${computed.sort().join(", ")}]`,
-    );
-  }
-}
-
-for (const category of categories) {
-  const result = resolveCategory(category);
-  if (result.members.length === 0) {
-    warnings.push(`Category "${category.slug}" matches no gateways`);
-  }
-  if (category.showTopThree && result.ranked.length === 0) {
-    warnings.push(
-      `Category "${category.slug}" promises a top three but no member holds a value for its metric`,
-    );
-  }
-  if (category.rankingMetric !== "none" && !category.rankingCriterion.trim()) {
-    errors.push(`Category "${category.slug}" ranks without stating a criterion`);
-  }
-  if (category.rankingMetric === "score" && !(category.signals?.length)) {
-    errors.push(`Category "${category.slug}" is score-ranked but declares no signals`);
   }
 }
 

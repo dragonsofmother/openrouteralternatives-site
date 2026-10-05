@@ -1,9 +1,7 @@
-import Link from "next/link";
 import type {
   Capability,
   Deployment,
   Field,
-  Funding,
   Gateway,
   Modality,
   ObservabilityLevel,
@@ -17,14 +15,12 @@ import {
   MODALITY,
   OBSERVABILITY,
   OPENAI_COMPATIBILITY,
-  OWNERSHIP_STATUS,
-  PRICING_TRANSPARENCY,
   PRODUCT_STATUS,
 } from "@/lib/taxonomy";
-import { flagEmoji, formatCount, formatFunding, formatQualifiedCount } from "@/lib/format";
+import { flagEmoji } from "@/lib/format";
 import { metricDisplay } from "@/lib/metric";
 import { routesOrEndpoints, secondaryCoverage } from "@/lib/gateway";
-import { MetricCell, MetricStatusChip } from "@/components/ui/metric-value";
+import { MetricCell, MetricStatusChip, metricTooltip } from "@/components/ui/metric-value";
 import { Badge } from "@/components/ui/badge";
 import { InfoTip } from "@/components/ui/tooltip";
 import {
@@ -37,57 +33,36 @@ import { GatewayLogo } from "@/components/gateways/gateway-logo";
 import { cn } from "@/lib/utils";
 
 /**
- * Gateway name cell: mark, linked name, differentiator on up to two lines.
+ * Gateway name cell: mark, name linked to the vendor's own site where one is
+ * confirmed, differentiator on up to two lines.
  *
  * The differentiator wraps rather than truncates so the column can stay
  * narrow without cutting the sentence short; anything beyond two lines is
- * clamped, and the full sentence is on the profile.
+ * clamped, and the full record is in the expanded row.
  */
 export function GatewayCell({ gateway }: { gateway: Gateway }) {
+  const nameClass = "block truncate text-[13.5px] font-semibold text-ink";
   return (
     <div className="flex items-center gap-3">
       <GatewayLogo gateway={gateway} size="md" />
       <div className="min-w-0">
-        <Link
-          href={`/gateways/${gateway.slug}`}
-          className="block truncate text-[13.5px] font-semibold text-ink hover:text-brand-ink"
-        >
-          {gateway.name}
-        </Link>
+        {gateway.website ? (
+          <a
+            href={gateway.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(nameClass, "hover:text-brand-ink")}
+          >
+            {gateway.name}
+          </a>
+        ) : (
+          <span className={nameClass}>{gateway.name}</span>
+        )}
         <p className="line-clamp-2 text-[11.5px] leading-snug text-ink-subtle">
           {gateway.differentiator}
         </p>
       </div>
     </div>
-  );
-}
-
-/**
- * Disclosed financing, compact.
- *
- * The round count on the first line and the stated total, where the company
- * publishes one, beneath it. Investors and round context stay in the tooltip
- * and on the profile, so the column never holds a list of names. Zero rounds
- * prints as a figure, not a dash: it is a fact about the company.
- */
-export function FundingCell({ field }: { field: Field<Funding> }) {
-  if (!field.value) return <NoValue compact field={field} />;
-  const { rounds, totalRaised, investors } = field.value;
-  const backers = investors.length > 0 ? ` Backed by ${investors.join(", ")}.` : "";
-  const label = `${formatFunding(field.value)}.${backers} ${provenanceText(field)}`;
-
-  return (
-    <InfoTip label={label}>
-      <button type="button" className="cursor-help text-right leading-tight" aria-label={label}>
-        <span className="tnum block text-[13px] text-ink">
-          {`${formatCount(rounds)} ${rounds === 1 ? "round" : "rounds"}`}
-          <ProvenanceGlyph field={field} />
-        </span>
-        {totalRaised ? (
-          <span className="tnum block text-[11px] text-ink-subtle">{totalRaised} raised</span>
-        ) : null}
-      </button>
-    </InfoTip>
   );
 }
 
@@ -103,16 +78,36 @@ export function ModelsCell({ gateway }: { gateway: Gateway }) {
 }
 
 /**
- * Routes and endpoints in one column.
+ * Providers with routes or endpoints beneath, in one column.
  *
- * The two stay separate fields in the record because they count different
- * things; the column shows whichever one carries a figure and labels it, so
- * "684 endpoints" is never read as "684 routes".
+ * The provider figure leads because most gateways publish one. The route or
+ * endpoint figure, where a vendor or this project recorded one, sits under it
+ * with its own label and evidence, so "684 endpoints" is never read as a
+ * provider or model count. Routes and endpoints stay separate fields in the
+ * record; `routesOrEndpoints` picks whichever carries a figure. The column
+ * sorts on providers.
  */
-export function RoutesCell({ gateway }: { gateway: Gateway }) {
+export function CoverageCell({ gateway }: { gateway: Gateway }) {
   const { metric, kind } = routesOrEndpoints(gateway);
-  const hasFigure = Boolean(metricDisplay(metric.current));
-  return <MetricCell metric={metric} caption={hasFigure ? kind : undefined} />;
+  const figure = metricDisplay(metric.current);
+  const tooltip = metricTooltip(metric.current);
+
+  return (
+    <div className="flex flex-col items-end gap-1">
+      <MetricCell metric={gateway.providers} caption="providers" />
+      {figure ? (
+        <InfoTip label={tooltip}>
+          <button
+            type="button"
+            aria-label={`${figure} ${kind}. ${tooltip}`}
+            className="cursor-help text-right text-[11px] leading-tight text-ink-subtle"
+          >
+            <span className="tnum font-medium text-ink-muted">{figure}</span> {kind}
+          </button>
+        </InfoTip>
+      ) : null}
+    </div>
+  );
 }
 
 /** The same pair at detail size, with the second figure where a vendor publishes both. */
@@ -144,29 +139,6 @@ export function CoverageDetail({ gateway }: { gateway: Gateway }) {
   );
 }
 
-/** Ownership status, with the parent company where there is one. */
-export function OwnershipCell({ gateway }: { gateway: Gateway }) {
-  const status = gateway.ownershipStatus;
-  if (!status.value) return <NoValue compact field={status} />;
-
-  const term = OWNERSHIP_STATUS[status.value];
-  const parent = gateway.parentCompany.value;
-  const description = status.note ? `${term.description} ${status.note}` : term.description;
-
-  return (
-    <div className="flex flex-col items-start gap-1">
-      <InfoTip label={description}>
-        <button type="button" className="cursor-help" aria-label={`${term.label}: ${description}`}>
-          <Badge tone={term.tone} size="xs" dot>
-            {term.label}
-          </Badge>
-        </button>
-      </InfoTip>
-      {parent ? <span className="truncate text-[11.5px] text-ink-subtle">{parent}</span> : null}
-    </div>
-  );
-}
-
 /** Product development status, rendered only when it is not simply active. */
 export function ProductStatusBadge({ gateway }: { gateway: Gateway }) {
   const status = gateway.productStatus;
@@ -185,25 +157,6 @@ export function ProductStatusBadge({ gateway }: { gateway: Gateway }) {
   );
 }
 
-export function PricingCell({ gateway }: { gateway: Gateway }) {
-  const pricing = gateway.pricingTransparency;
-  if (!pricing.value || pricing.value === "unresolved") {
-    return <NoValue compact field={pricing} />;
-  }
-  const term = PRICING_TRANSPARENCY[pricing.value];
-  const description = pricing.note ? `${term.description} ${pricing.note}` : term.description;
-
-  return (
-    <InfoTip label={description}>
-      <button type="button" className="cursor-help" aria-label={`${term.label}: ${description}`}>
-        <Badge tone={term.tone} size="xs">
-          {term.label}
-        </Badge>
-      </button>
-    </InfoTip>
-  );
-}
-
 export function ProvidersCell({ gateway }: { gateway: Gateway }) {
   return <MetricCell metric={gateway.providers} />;
 }
@@ -211,7 +164,7 @@ export function ProvidersCell({ gateway }: { gateway: Gateway }) {
 /** Modality badges, truncated so the table stays readable. */
 export function ModalityCell({
   field,
-  limit = 4,
+  limit = 3,
 }: {
   field: Field<Modality[]>;
   limit?: number;
@@ -260,8 +213,8 @@ export function ModalityCell({
 }
 
 /**
- * Jurisdiction: country of incorporation plus an EU / non-EU marker.
- * Deliberately never rendered next to residency without a separating column.
+ * Jurisdiction: country of incorporation plus an EU / non-EU marker. Kept in
+ * its own column, apart from residency, because the two are different facts.
  */
 export function JurisdictionCell({ gateway }: { gateway: Gateway }) {
   const bucket = JURISDICTION[gateway.jurisdictionBucket];
@@ -270,14 +223,16 @@ export function JurisdictionCell({ gateway }: { gateway: Gateway }) {
   return (
     <div className="flex flex-col items-start gap-1">
       {country.value ? (
-        <span className="flex items-center gap-1.5 text-[13px] text-ink">
+        <span className="flex max-w-full items-start gap-1.5 text-[13px] leading-snug text-ink">
           {gateway.countryCode.value ? (
-            <span aria-hidden="true" className="text-[13px] leading-none">
+            <span aria-hidden="true" className="mt-px text-[13px] leading-none">
               {flagEmoji(gateway.countryCode.value)}
             </span>
           ) : null}
-          <span className="truncate">{country.value}</span>
-          <ProvenanceMark field={country} />
+          <span className="min-w-0 break-words">
+            {country.value}
+            <ProvenanceMark field={country} />
+          </span>
         </span>
       ) : (
         <NoValue compact field={country} />
@@ -303,7 +258,7 @@ export function ResidencyCell({ gateway }: { gateway: Gateway }) {
   return (
     <InfoTip label={description}>
       <button type="button" className="cursor-help" aria-label={`${term.label}: ${description}`}>
-        <Badge tone={term.tone} size="sm" dot>
+        <Badge tone={term.tone} size="xs" dot>
           {term.label}
         </Badge>
       </button>
@@ -311,24 +266,50 @@ export function ResidencyCell({ gateway }: { gateway: Gateway }) {
   );
 }
 
-export function DeploymentCell({ field }: { field: Field<Deployment[]> }) {
-  if (!field.value || field.value.length === 0) return <NoValue compact field={field} />;
+/**
+ * Deployment options, with zero data retention beneath where the column is
+ * asked to carry it. They stay two fields in the record: one says where the
+ * gateway can run, the other what it keeps.
+ */
+export function DeploymentCell({
+  field,
+  zdr,
+}: {
+  field: Field<Deployment[]>;
+  zdr?: Field<Capability>;
+}) {
+  const options =
+    field.value && field.value.length > 0 ? (
+      <div className="flex flex-wrap gap-1">
+        {field.value.map((deployment) => (
+          <InfoTip key={deployment} label={DEPLOYMENT[deployment].description}>
+            <button
+              type="button"
+              className="cursor-help"
+              aria-label={DEPLOYMENT[deployment].description}
+            >
+              <Badge tone="outline" size="xs">
+                {DEPLOYMENT[deployment].label}
+              </Badge>
+            </button>
+          </InfoTip>
+        ))}
+      </div>
+    ) : (
+      <NoValue compact field={field} />
+    );
+
+  if (!zdr) return options;
 
   return (
-    <div className="flex flex-wrap gap-1">
-      {field.value.map((deployment) => (
-        <InfoTip key={deployment} label={DEPLOYMENT[deployment].description}>
-          <button
-            type="button"
-            className="cursor-help"
-            aria-label={DEPLOYMENT[deployment].description}
-          >
-            <Badge tone="outline" size="xs">
-              {DEPLOYMENT[deployment].label}
-            </Badge>
-          </button>
-        </InfoTip>
-      ))}
+    <div className="flex flex-col items-start gap-1.5">
+      {options}
+      <span className="inline-flex items-center gap-1.5">
+        <span className="text-[10.5px] font-medium uppercase tracking-[0.06em] text-ink-subtle">
+          ZDR
+        </span>
+        <CapabilityCell field={zdr} />
+      </span>
     </div>
   );
 }
@@ -477,70 +458,3 @@ export function EmployeesCell({ gateway }: { gateway: Gateway }) {
   );
 }
 
-export function LocationsCell({ field }: { field: Field<string[]> }) {
-  if (!field.value || field.value.length === 0) return <NoValue compact field={field} />;
-
-  return (
-    <span className="text-[12.5px] leading-snug text-ink-muted">
-      {field.value.join(", ")}
-      <ProvenanceMark field={field} />
-    </span>
-  );
-}
-
-/** Social cell used for the LinkedIn and X columns. */
-export function SocialCell({
-  url,
-  followers,
-  network,
-  className,
-}: {
-  url: string | null;
-  followers: Field<number>;
-  network: "LinkedIn" | "X";
-  className?: string;
-}) {
-  if (followers.value === null && !url) {
-    return <NoValue compact field={followers} />;
-  }
-
-  const body =
-    followers.value !== null ? (
-      <span className="tnum text-[13px] text-ink">
-        {formatQualifiedCount(followers.value, followers.qualifier)}
-        <ProvenanceGlyph field={followers} />
-      </span>
-    ) : (
-      <span className="text-[12.5px] text-ink-muted">Profile</span>
-    );
-
-  // Without a link there is no interactive parent, so the provenance can carry
-  // its own tooltip.
-  if (!url) {
-    if (followers.value === null) return <span className={className}>{body}</span>;
-    const label = `${network} followers on the snapshot date. ${provenanceText(followers)}`;
-    return (
-      <InfoTip label={label}>
-        <button type="button" aria-label={label} className={cn("cursor-help", className)}>
-          {body}
-        </button>
-      </InfoTip>
-    );
-  }
-
-  return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer nofollow"
-      className={cn("hover:text-brand-ink", className)}
-      aria-label={
-        followers.value === null
-          ? `${network} profile`
-          : `${network} profile. ${formatCount(followers.value)} followers. ${provenanceText(followers)}`
-      }
-    >
-      {body}
-    </a>
-  );
-}

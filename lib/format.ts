@@ -33,15 +33,20 @@ export function formatFunding(funding: Funding): string {
   return funding.totalRaised ? `${rounds} · ${funding.totalRaised} raised` : rounds;
 }
 
+/** A count rounded by scale: 1,234 reads "1.2k", 12,345 reads "12k", 1,200,000 reads "1.2M". */
+export function formatCompactCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1)}M`;
+  if (n >= 10_000) return `${Math.round(n / 1000)}k`;
+  if (n >= 1_000) return `${(n / 1000).toFixed(1)}k`;
+  return formatCount(n);
+}
+
 /**
  * Social follower counts are point-in-time snapshots, so they are rounded by
  * scale rather than shown to the unit.
  */
 export function formatFollowers(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1)}M`;
-  if (n >= 10_000) return `${Math.round(n / 1000)}k`;
-  if (n >= 1_000) return `${(n / 1000).toFixed(1)}k`;
-  return formatCount(n);
+  return formatCompactCount(n);
 }
 
 const DATE_LONG = new Intl.DateTimeFormat("en-US", {

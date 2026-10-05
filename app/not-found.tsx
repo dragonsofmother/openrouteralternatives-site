@@ -10,20 +10,18 @@ export default function NotFound() {
           404 — not found
         </p>
         <h1 className="mt-4 text-[32px] font-semibold tracking-[-0.03em] text-ink sm:text-[40px]">
-          This page is not in the directory
+          This page does not exist here
         </h1>
         <p className="mt-4 text-[15px] leading-relaxed text-ink-muted">
-          The gateway, category or page you asked for is not part of the current dataset. It may
-          have been renamed, or it may never have been tracked here.
+          The page you asked for is not part of this site. Everything the dataset holds is in
+          the comparison table on the homepage.
         </p>
         <ul className="mt-8 flex flex-col gap-3">
           {[
-            ["/compare", "Compare every gateway"],
-            ["/gateways", "Browse gateway profiles"],
-            ["/categories", "Browse categories"],
+            ["/#compare", "Open the comparison table"],
             ["/#methodology", "Read the methodology"],
             ["/why", "Why this project exists"],
-            ["/blog", "Read the blog"],
+            ["/#contribute", "How to contribute"],
           ].map(([href, label]) => (
             <li key={href}>
               <Link

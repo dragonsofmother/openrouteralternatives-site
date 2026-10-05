@@ -37,7 +37,11 @@ export type GatewayRow = Row<GatewayTableFeatures, Gateway>;
 /** Per-column presentation hints read by the table shell. */
 export interface GatewayColumnMeta {
   align?: "left" | "right";
-  /** Rendered width in pixels; the table scrolls horizontally rather than squashing. */
+  /**
+   * Preferred width in pixels. The table turns the visible columns' widths
+   * into proportions so they fill the container, and only scrolls once the
+   * viewport is narrower than roughly three quarters of their sum.
+   */
   width?: number;
 }
 
@@ -45,10 +49,10 @@ export interface GatewayColumnMeta {
  * Numeric comparator for measured columns.
  *
  * Rows with no value are handled by `sortUndefined: "last"` on the column
- * rather than here: that pushes them to the bottom in BOTH directions, so an
- * unmeasured catalogue is never promoted to the top by reversing the sort. A
- * comparator cannot achieve that on its own, because its result is negated for
- * a descending sort.
+ * rather than here: that pushes them to the bottom whatever the direction, so
+ * an unmeasured catalogue can never reach the top. Each column also declares
+ * its single sort direction with `sortDescFirst`, and the table never reverses
+ * it.
  */
 export const numeric: SortFn<GatewayTableFeatures, Gateway> = (rowA, rowB, columnId) => {
   const left = rowA.getValue(columnId) as number;

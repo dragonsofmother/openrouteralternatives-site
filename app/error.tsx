@@ -41,7 +41,7 @@ export default function Error({
             Try again
           </Button>
           <Button asChild variant="outline">
-            <Link href="/">Back to the directory</Link>
+            <Link href="/">Back to the comparison</Link>
           </Button>
         </div>
       </div>

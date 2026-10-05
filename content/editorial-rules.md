@@ -13,10 +13,9 @@ update or page can be checked against them without re-reading the original brief
 
 ## What may never appear
 
-- An arbitrary overall score, rating or composite index. A category page may order its
-  members by a weighted score only when the page itself declares every recorded attribute
-  and weight that feeds it, the scoring code refers to no gateway by name, and an
-  attribute that is not recorded earns nothing.
+- An arbitrary overall score, rating, composite index or ranked list of any kind. The
+  table opens in alphabetical order and sorts on one recorded column at a time, in one
+  declared direction, with unrecorded values always at the bottom.
 - The claim that one company is "the best OpenRouter alternative" without a specific
   measurable criterion attached to that claim.
 - An invented value of any kind: model count, provider count, follower count, legal
@@ -29,15 +28,14 @@ update or page can be checked against them without re-reading the original brief
   direction.
 - Sorting or filtering manipulated to favour one entry, or a competitor hidden from a
   list they qualify for.
-- A gateway named in ranking, scoring or category code. Membership and order follow from
-  recorded values only.
+- A gateway named in sorting or filtering code. Order follows from recorded values only.
 
 ## Counting rules
 
 **Models.** Distinct models addressable through a gateway's public API, deduplicated where
 possible. Measured directly from a public model endpoint where one exists, and always
 displayed with the measurement date. Vendor-stated totals are labelled as such and are
-excluded from rankings built on measured counts. Routes are counted separately as
+never shown as measurements. Routes are counted separately as
 model × provider combinations.
 
 **Providers.** Distinct upstream inference providers or model companies reachable through

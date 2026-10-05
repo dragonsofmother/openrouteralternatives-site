@@ -211,7 +211,7 @@ export default function WhyPage() {
               id="table-heading"
               eyebrow="05"
               title="How this shaped the table"
-              description="Each question the assessment forced on us became a separately sourced column. None is derived from another, and EU incorporation is never taken as evidence of EU processing."
+              description="Each question the assessment forced on us became a separately sourced field, shown as a table column or in the expanded row. None is derived from another, and EU incorporation is never taken as evidence of EU processing."
               action={
                 <Link
                   href="/#compare"
@@ -240,20 +240,13 @@ export default function WhyPage() {
               ))}
             </ul>
             <p className="mt-4 text-[13px] leading-relaxed text-ink-subtle">
-              The three residency attributes, and why a single &ldquo;EU&rdquo; label is not enough,
-              are explained in{" "}
-              <Link href="/#eu-explainer" className="text-brand-ink hover:underline">
-                EU company ≠ EU data residency
+              The residency attributes, and why a single &ldquo;EU&rdquo; label is not enough, are
+              defined under{" "}
+              <Link href="/#eu-residency" className="text-brand-ink hover:underline">
+                methodology
               </Link>
-              . The categories{" "}
-              <Link href="/categories/eu-gateways" className="text-brand-ink hover:underline">
-                EU AI gateways
-              </Link>{" "}
-              and{" "}
-              <Link href="/categories/eu-hosted" className="text-brand-ink hover:underline">
-                EU-hosted gateways
-              </Link>{" "}
-              list the two populations separately for the same reason.
+              . The jurisdiction and EU residency filters above the table select the two
+              populations separately for the same reason.
             </p>
           </section>
         </div>

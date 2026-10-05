@@ -42,7 +42,7 @@ export function Contribute() {
     <section
       id="contribute"
       aria-labelledby="contribute-heading"
-      className="scroll-mt-20 border-y border-line bg-subtle"
+      className="scroll-mt-20"
     >
       <Container>
         <div className="grid gap-10 py-14 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16 lg:py-16">

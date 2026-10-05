@@ -175,7 +175,8 @@ tokens live in [`app/globals.css`](app/globals.css).
 
 The link preview card at the top of this page is rendered at build time by
 [`app/opengraph-image.tsx`](app/opengraph-image.tsx) from six marks in `public/logos`, and
-served as `og:image` and `twitter:image`.
+served as `og:image` and `twitter:image`. A 1280×640 copy for GitHub's repository **Social
+preview** setting is kept at [`docs/social-card-github.png`](docs/social-card-github.png).
 
 ## Layout
 

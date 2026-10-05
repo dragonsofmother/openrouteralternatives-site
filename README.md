@@ -39,6 +39,12 @@ green accent, and a phosphor display. All tokens live in [`app/globals.css`](app
 the evidence vocabulary prints as glyphs (● measured, ○ official, ◇ catalogue, — not
 published) defined on `METRIC_STATUS` in [`lib/taxonomy.ts`](lib/taxonomy.ts).
 
+The link preview card (`og:image` and `twitter:image`) is rendered once at build time by
+[`app/opengraph-image.tsx`](app/opengraph-image.tsx) from
+[`lib/social-image.tsx`](lib/social-image.tsx): the dark palette, six gateway marks from
+`public/logos`, and JetBrains Mono from [`app/fonts`](app/fonts) (SIL Open Font License, text
+alongside). It is served at `/opengraph-image`.
+
 ## Stack
 
 Next.js 16 (App Router, React 19) · TypeScript strict · Tailwind CSS v4 ·

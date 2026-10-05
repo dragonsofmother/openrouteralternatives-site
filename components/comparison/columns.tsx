@@ -55,8 +55,8 @@ export const COLUMN_LABELS: Record<string, string> = {
 /**
  * Column definitions.
  *
- * The gateway name and jurisdiction columns do not sort: the table opens
- * alphabetically and jurisdiction is a filter, not an order. Every other
+ * The gateway name and jurisdiction columns do not sort: the table opens on
+ * model count and jurisdiction is a filter, not an order. Every other
  * sortable column declares exactly one direction with `sortDescFirst`
  * (largest or deepest first for measured quantities, the taxonomy order for
  * labelled ones), and the table never reverses it. Rows without a value sort

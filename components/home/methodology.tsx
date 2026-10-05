@@ -165,7 +165,7 @@ export function Methodology() {
           id="methodology-heading"
           eyebrow="Methodology"
           title="How to read the table"
-          description="No overall score is published and no company is called the best OpenRouter alternative. With no filter or sort applied, rows are listed alphabetically by name. A filtered view is ordered by model count, largest first; each sortable column sorts in one declared direction with model count as the tiebreak; and rows without a value always stay at the bottom. Each column is established the same way for every entry, and where a value cannot be established the cell says so."
+          description="No overall score is published and no company is called the best OpenRouter alternative. The table opens ordered by model count, largest first, with equal counts in alphabetical order; each sortable column sorts in one declared direction with model count as the tiebreak; and rows without a value always stay at the bottom. Each column is established the same way for every entry, and where a value cannot be established the cell says so."
         />
 
         <dl className="mt-8 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
@@ -467,8 +467,8 @@ export function Methodology() {
             </Rule>
             <p>
               The protections against bias are structural rather than promised: no composite score
-              exists and every order on the site is a single stated column, the unfiltered table is
-              alphabetical, every sortable column sorts in one declared direction with unrecorded
+              exists and every order on the site is a single stated column, the table opens on model
+              count, every sortable column sorts in one declared direction with unrecorded
               values at the bottom, measured and provider-stated figures are always labelled apart,
               and no gateway is excluded from a filter it qualifies for.
             </p>

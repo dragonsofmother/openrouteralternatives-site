@@ -4,12 +4,7 @@ import * as React from "react";
 import { flexRender, useTable } from "@tanstack/react-table";
 import { ArrowDown, SearchX } from "lucide-react";
 import type { Gateway } from "@/types";
-import {
-  EMPTY_FILTERS,
-  activeFilterCount,
-  filterGateways,
-  type GatewayFilters,
-} from "@/lib/gateway";
+import { EMPTY_FILTERS, filterGateways, type GatewayFilters } from "@/lib/gateway";
 import {
   gatewayTableFeatures,
   type GatewayColumnDef,
@@ -25,15 +20,13 @@ import { cn } from "@/lib/utils";
 /**
  * The comparison table.
  *
- * Rows arrive alphabetical by gateway name and open that way — never a
- * ranking that places one company first. Each sortable column sorts in one
- * declared direction (`sortDescFirst` on the column), so a sort can never be
- * reversed to promote rows that hold no value. The gateway name and
- * jurisdiction columns do not sort at all.
- *
- * Model count is always the second order: a filtered view with no explicit
- * sort is ordered by it, largest first, and it breaks ties under any column
- * sort. Rows without a count stay at the bottom either way.
+ * The table opens ordered by model count, largest first — one stated,
+ * measurable column, never a composite score. Rows arrive alphabetical by
+ * gateway name, which settles equal counts and the rows without one; those
+ * stay at the bottom. Each sortable column sorts in one declared direction
+ * (`sortDescFirst` on the column), so a sort can never be reversed to promote
+ * rows that hold no value, and model count remains the tiebreak under any
+ * other sort. The gateway name and jurisdiction columns do not sort at all.
  */
 export function ComparisonTable({
   gateways,
@@ -59,12 +52,12 @@ export function ComparisonTable({
     [gateways, filters, showFilters],
   );
 
-  const hasActiveFilters = showFilters && activeFilterCount(filters) > 0;
+  // Model count is the base order: the default on its own and the tiebreak
+  // under any column sort. The alphabetical input order settles the rest.
   const effectiveSorting = React.useMemo(() => {
     if (sorting.some((entry) => entry.id === "models")) return sorting;
-    if (sorting.length === 0 && !hasActiveFilters) return sorting;
     return [...sorting, { id: "models", desc: true }];
-  }, [sorting, hasActiveFilters]);
+  }, [sorting]);
 
   const table = useTable({
     features: gatewayTableFeatures,

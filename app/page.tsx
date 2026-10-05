@@ -33,10 +33,9 @@ export default function HomePage() {
           <p className="mt-3 text-[12.5px] leading-relaxed text-ink-subtle">
             Model counts are dated snapshots; where available, catalogues are measured directly
             from public model endpoints, and OpenAI compatibility is read from documentation and
-            shown as a label, never a score. Default order is alphabetical. As soon as a filter is
-            applied, the rows that match are ordered by model count, largest first. Each sortable
-            column sorts in one direction only, model count breaks ties, and rows without a value stay at
-            the bottom. Every figure carries how it was established, so an absent number reads as a
+            shown as a label, never a score. Rows are ordered by model count, largest first, with equal counts in alphabetical
+            order. Each sortable column sorts in one direction only, model count breaks ties, and
+            rows without a value stay at the bottom. Every figure carries how it was established, so an absent number reads as a
             fact about the product rather than a gap in the research.
           </p>
         </Container>

@@ -14,7 +14,7 @@ update or page can be checked against them without re-reading the original brief
 ## What may never appear
 
 - An arbitrary overall score, rating, composite index or ranked list of any kind. The
-  table opens in alphabetical order and sorts on one recorded column at a time, in one
+  table opens ordered by model count and sorts on one recorded column at a time, in one
   declared direction, with unrecorded values always at the bottom.
 - The claim that one company is "the best OpenRouter alternative" without a specific
   measurable criterion attached to that claim.

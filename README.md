@@ -53,7 +53,7 @@ $ ora compare --jurisdiction eu
                                                    measured 107
   EUrouter   Netherlands  ● EU by default  140+    ◇ catalogue   2-10       ✓ yes   — not recorded
 
-  4/23 rows · a filtered view is ordered by model count, largest first
+  4/23 rows · ordered by model count, largest first
 ```
 
 Ten columns: gateway, jurisdiction, EU residency, models, certifications, employees,
@@ -66,7 +66,7 @@ the sources with the date each was read.
 
 | Rule | How it is kept |
 | --- | --- |
-| **Nothing is ranked.** | No composite score exists anywhere in the code. The table opens alphabetically; a filtered view is ordered by model count; every column sorts in one declared direction, with model count as the tiebreak. The gateway and jurisdiction columns do not sort at all. |
+| **Nothing is ranked.** | No composite score exists anywhere in the code. The table opens ordered by model count, largest first, with equal counts alphabetical; every column sorts in one declared direction, with model count as the tiebreak. The gateway and jurisdiction columns do not sort at all. |
 | **Rows without a value sink.** | `sortUndefined: "last"` on every sortable column, so an unmeasured catalogue can never reach the top. |
 | **A blank is never a zero.** | Every value is a `Field<T>` carrying a status. A missing value renders its reason: *Not recorded*, *Not published*, *Not applicable*, *Configured by you*, *Different metric*. |
 | **Evidence travels with the number.** | Quantities are `Metric` objects with dated observations. Under each figure: `●` measured by this project, `○` officially published, `◇` from an official catalogue, `—` not published. Measured and vendor-stated figures are never shown as the same kind of evidence. |

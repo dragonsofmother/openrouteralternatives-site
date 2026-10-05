@@ -10,6 +10,16 @@ export const changelog: ChangelogEntry[] = [
   {
     date: "2026-10-05",
     kind: "site",
+    title: "Table opens on model count",
+    summary:
+      "The comparison table now opens ordered by model count, largest first, instead of alphabetically; equal counts and rows without a count keep alphabetical order, and the latter stay at the bottom. Model count remains the tiebreak under any other column sort. One stated, measurable column, not a score.",
+    changes: [
+      { gateway: null, field: "Table order", previous: "Alphabetical until a filter is applied", next: "Model count, largest first, in every view", source: "Oct 5, 2026 site revision" },
+    ],
+  },
+  {
+    date: "2026-10-05",
+    kind: "site",
     title: "Terminal look, in light and dark",
     summary:
       "The site is restyled as a terminal: one monospace face, square corners, no shadows, dashed rules, a shell prompt as the wordmark, bracketed navigation, command-line flags for the filters and status glyphs instead of icons under every figure. The light palette is paper and ink with a deep green accent; the dark palette is a phosphor display. Nothing in the data or the table's behaviour changed.",
